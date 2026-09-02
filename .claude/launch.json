@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "static-preview",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["/Users/evan/Desktop/Claude Code/Unlock the Power of Your Story Book + Mini Course Funnel/.claude/static_server.py"],
+      "autoPort": true
+    }
+  ]
+}

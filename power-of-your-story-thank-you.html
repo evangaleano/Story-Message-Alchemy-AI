@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Book Is On Its Way | Brand Story</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     THANK YOU PAGE — Unlock the Power of Your Story funnel
+     Navy/cream/gold palette + League Spartan headlines, shared with
+     power-of-your-story-landing.html for cross-page consistency.
+     Set this as the redirect target of the GHL order form once
+     payment completes.
+     ============================================================ */
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1a1a;
+    --ink-soft: #333333;
+    --ink-muted: #6b6b6b;
+    --cream: #f8f6f1;
+    --cream-warm: #ebe8e0;
+    --cream-deep: #ded8cd;
+    /* gold/charcoal matched to brand-story.agency's live theme tokens */
+    --gold: #d9bc72;
+    --gold-light: #f0dda3;
+    --gold-muted: #b5924a;
+
+    --charcoal: #1a1a1a;
+    --charcoal-light: #2d2d2d;
+
+    --serif: 'Instrument Serif', Georgia, serif;
+    --headline: 'Montserrat', system-ui, sans-serif;
+    --sans: 'Poppins', system-ui, sans-serif;
+    --mono: 'Poppins', system-ui, sans-serif;
+    --max: 1100px;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--cream);
+    color: var(--ink);
+    font-size: 17px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  img { max-width: 100%; display: block; }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 2rem; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: center;
+    padding: 1.1rem 2rem;
+    background: rgba(10,10,10,0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .nav-logo {
+    font-family: var(--headline); font-size: 1.05rem; font-weight: 700;
+    color: var(--cream); text-decoration: none; letter-spacing: 0.01em;
+  }
+
+  /* ─── CONFIRMATION HERO (dusk / lighthouse) ─── */
+  .confirm-hero {
+    position: relative;
+    padding: 9rem 0 5rem;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 70% 50% at 78% 20%, rgba(212,188,122,0.14) 0%, transparent 60%),
+      linear-gradient(170deg, var(--charcoal) 0%, var(--charcoal-light) 100%);
+    color: var(--cream);
+    text-align: center;
+  }
+
+  .beam {
+    position: absolute; top: -10%; right: 6%; width: 46vw; height: 130%;
+    background: conic-gradient(from -18deg at 20% 15%, rgba(212,188,122,0.16), transparent 22%);
+    pointer-events: none; z-index: 1;
+  }
+
+  .confirm-inner { position: relative; z-index: 2; max-width: 640px; margin: 0 auto; }
+
+  .confirm-badge {
+    width: 60px; height: 60px; margin: 0 auto 1.6rem; border-radius: 50%;
+    border: 1.5px solid var(--gold-light);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .confirm-badge svg { width: 26px; height: 26px; color: var(--gold-light); }
+
+  .eyebrow {
+    font-family: var(--mono); font-weight: 600; font-size: 0.75rem;
+    color: var(--gold-light); letter-spacing: 0.18em; text-transform: uppercase;
+    margin-bottom: 1.2rem; display: flex; align-items: center; justify-content: center; gap: 0.9rem;
+  }
+  .eyebrow::before, .eyebrow::after { content: ''; width: 34px; height: 1px; background: var(--gold-light); }
+
+  .confirm-hero h1 {
+    font-family: var(--headline); font-weight: 700; line-height: 1.02;
+    letter-spacing: -0.02em;
+    font-size: clamp(2.1rem, 4.4vw, 3.2rem);
+    margin-bottom: 1.3rem;
+  }
+  .confirm-hero h1 em { font-style: normal; color: var(--gold-light); }
+
+  .confirm-hero .sub {
+    font-size: 1.05rem; font-weight: 300; color: rgba(248,246,241,0.82);
+    max-width: 520px; margin: 0 auto;
+  }
+  .confirm-hero .sub strong { color: var(--cream); font-weight: 500; }
+
+  /* ─── BEAM DIVIDER ─── */
+  .beam-divider {
+    height: 90px; position: relative; background: var(--cream);
+    overflow: hidden;
+  }
+  .beam-divider svg { position: absolute; top: 0; left: 50%; transform: translateX(-50%); }
+
+  /* ─── WHAT HAPPENS NEXT ─── */
+  section { padding: 5rem 0; }
+  .section-cream { background: var(--cream); }
+
+  h2 {
+    font-family: var(--headline); font-weight: 700; line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    text-align: center; margin-bottom: 3rem;
+  }
+
+  .steps {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.8rem;
+  }
+  .step {
+    background: #fff; border: 1px solid var(--cream-deep); border-radius: 4px;
+    padding: 2rem 1.7rem;
+  }
+  .step-num {
+    font-family: var(--mono); font-weight: 600; font-size: 0.78rem; color: var(--gold-muted);
+    letter-spacing: 0.08em; margin-bottom: 0.9rem;
+  }
+  .step h3 { font-family: var(--headline); font-size: 1.15rem; font-weight: 700; margin-bottom: 0.6rem; }
+  .step p { font-size: 0.95rem; color: var(--ink-soft); }
+  @media (max-width: 880px) { .steps { grid-template-columns: 1fr; } }
+
+  /* ─── SUPPORT NOTE ─── */
+  .support-note {
+    max-width: 640px; margin: 3rem auto 0; text-align: center;
+    padding: 1.6rem 1.8rem; background: var(--cream-warm); border-radius: 4px;
+    border: 1px solid var(--cream-deep);
+  }
+  .support-note p { font-size: 0.95rem; color: var(--ink-soft); }
+  .support-note a { color: var(--gold-muted); font-weight: 500; }
+
+  footer {
+    background: var(--charcoal); color: rgba(248,246,241,0.5); padding: 2.4rem 0;
+    font-family: var(--mono); font-size: 0.78rem; text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">Brand Story</a>
+</nav>
+
+<!-- ═══════════════════════ CONFIRMATION ═══════════════════════ -->
+<header class="confirm-hero">
+  <div class="beam" aria-hidden="true"></div>
+  <div class="wrap confirm-inner">
+    <div class="confirm-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="eyebrow">Order Confirmed</div>
+    <h1>Your book is on its way — <em>check your inbox</em></h1>
+    <p class="sub">
+      Thanks for grabbing <strong>Unlock the Power of Your Story</strong>. We've sent your
+      instant download link to the email you used at checkout. It should land within the
+      next few minutes.
+    </p>
+  </div>
+</header>
+
+<div class="beam-divider" aria-hidden="true">
+  <svg width="240" height="90" viewBox="0 0 240 90" xmlns="http://www.w3.org/2000/svg">
+    <path d="M120 0 L60 90" stroke="#d29632" stroke-width="1" opacity="0.35"/>
+    <path d="M120 0 L180 90" stroke="#d29632" stroke-width="1" opacity="0.35"/>
+    <path d="M120 0 L120 90" stroke="#d29632" stroke-width="1" opacity="0.6"/>
+  </svg>
+</div>
+
+<!-- ═══════════════════════ WHAT HAPPENS NEXT ═══════════════════════ -->
+<section class="section-cream">
+  <div class="wrap">
+    <h2>What happens next</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">STEP 1</div>
+        <h3>Check your email</h3>
+        <p>Look for a message with your download link. It's on its way to the inbox you checked out with.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">STEP 2</div>
+        <h3>Can't find it?</h3>
+        <p>Check your spam or promotions folder. If it's there, move it to your main inbox so future emails land correctly.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">STEP 3</div>
+        <h3>Start reading</h3>
+        <p>It's built to read in under an hour. Set aside a quiet 45 minutes and go through it in one sitting.</p>
+      </div>
+    </div>
+
+    <div class="support-note">
+      <p>
+        Still don't see it after 15 minutes? Email us at
+        <a href="mailto:support@brand-story.agency">support@brand-story.agency</a>
+        and we'll get your copy sent over right away.
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2026 Brand Story, Evan Galeano. All rights reserved.
+</footer>
+
+</body>
+</html>

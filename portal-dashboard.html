@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Member Dashboard | Brand Story</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     PORTAL DASHBOARD — logged-in home. Same DEMO auth layer as
+     portal-login.html (localStorage session + buyer record).
+     See portal-login.html header comment before wiring to real data.
+     ============================================================ */
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1a1a;
+    --cream: #f8f6f1;
+    --cream-warm: #ebe8e0;
+    --cream-deep: #ded8cd;
+    --gold: #d9bc72;
+    --gold-light: #f0dda3;
+    --gold-muted: #b5924a;
+    --charcoal: #1a1a1a;
+    --charcoal-light: #2d2d2d;
+
+    --serif: 'Instrument Serif', Georgia, serif;
+    --headline: 'Montserrat', system-ui, sans-serif;
+    --sans: 'Poppins', system-ui, sans-serif;
+    --mono: 'Poppins', system-ui, sans-serif;
+    --max: 1100px;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--charcoal);
+    color: var(--cream);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  img { max-width: 100%; display: block; }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 2rem; }
+
+  /* ─── NAV ─── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .nav-logo { display: inline-flex; align-items: center; gap: 0.6rem; text-decoration: none; color: var(--cream); }
+  .nav-logo svg { width: 24px; height: 24px; color: var(--gold-light); }
+  .nav-logo span { font-family: var(--headline); font-weight: 700; font-size: 1rem; }
+
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    border: 1px solid rgba(255,255,255,0.16); border-radius: 999px;
+    padding: 0.55rem 1.1rem; color: var(--cream); text-decoration: none;
+    font-size: 0.82rem; font-weight: 600; cursor: pointer; background: none;
+    font-family: var(--sans);
+    transition: border-color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--gold); }
+  .btn-ghost svg { width: 15px; height: 15px; }
+
+  main { padding: 3rem 0 5rem; }
+
+  h1 {
+    font-family: var(--headline); font-weight: 700; font-size: clamp(1.8rem, 3vw, 2.2rem);
+    letter-spacing: -0.01em; margin-bottom: 0.4rem;
+  }
+  .welcome-sub { color: rgba(248,246,241,0.6); margin-bottom: 2.6rem; }
+  .welcome-sub strong { color: var(--gold-light); font-weight: 600; }
+
+  /* ─── BONUS CARD ─── */
+  .bonus-card {
+    max-width: 620px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; overflow: hidden; margin-bottom: 3.5rem;
+  }
+  .bonus-video {
+    position: relative; aspect-ratio: 16/9;
+    background: linear-gradient(160deg, #23241f 0%, #16160f 100%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .bonus-video .play-badge {
+    width: 62px; height: 62px; border-radius: 50%;
+    background: rgba(196,169,98,0.9); display: flex; align-items: center; justify-content: center;
+  }
+  .bonus-video .play-badge svg { width: 22px; height: 22px; color: var(--charcoal); }
+  .bonus-body { padding: 1.6rem 1.8rem 1.8rem; }
+  .bonus-eyebrow {
+    font-family: var(--mono); font-weight: 600; font-size: 0.72rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--gold-light); margin-bottom: 0.6rem;
+  }
+  .bonus-body h2 {
+    font-family: var(--headline); font-weight: 700; font-size: 1.25rem; line-height: 1.35;
+    margin-bottom: 1.3rem;
+  }
+  .bonus-body h2 strong { color: var(--gold-light); }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%); color: var(--charcoal);
+    padding: 0.95rem; border-radius: 4px; border: none; cursor: pointer;
+    font-family: var(--sans); font-size: 0.9rem; font-weight: 700; letter-spacing: 0.03em;
+    text-decoration: none; transition: filter 0.2s;
+  }
+  .btn-primary:hover { filter: brightness(1.06); }
+
+  /* ─── COURSES ─── */
+  section.courses h2.section-title {
+    font-family: var(--headline); font-weight: 700; font-size: 1.4rem; margin-bottom: 1.6rem;
+  }
+  .course-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 260px)); gap: 1.6rem;
+  }
+  .course-card {
+    display: block; text-decoration: none; color: inherit;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; overflow: hidden;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .course-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+  .course-cover {
+    aspect-ratio: 4/3;
+    background:
+      radial-gradient(ellipse 70% 50% at 78% 20%, rgba(212,188,122,0.18) 0%, transparent 60%),
+      linear-gradient(160deg, var(--charcoal-light) 0%, #0f0f0c 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+    padding: 1.2rem;
+  }
+  .course-cover svg { width: 30px; height: 30px; color: var(--gold-light); margin-bottom: 0.7rem; }
+  .course-cover .eyebrow { font-family: var(--mono); font-weight: 600; font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-light); margin-bottom: 0.4rem; }
+  .course-cover .title { font-family: var(--headline); font-weight: 800; font-size: 1.05rem; line-height: 1.2; }
+  .course-info { padding: 1.1rem 1.2rem 1.3rem; }
+  .course-info h3 { font-family: var(--headline); font-weight: 700; font-size: 0.98rem; margin-bottom: 0.4rem; }
+  .course-info p { font-size: 0.85rem; color: rgba(248,246,241,0.56); margin-bottom: 0.9rem; line-height: 1.5; }
+  .progress-row { display: flex; align-items: center; justify-content: space-between; font-family: var(--mono); font-size: 0.72rem; color: rgba(248,246,241,0.5); margin-bottom: 0.5rem; }
+  .progress-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+  .progress-bar span { display: block; height: 100%; background: var(--gold); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="portal-dashboard.html" class="nav-logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 6c-1.8-1.4-4.3-2-7-2v13c2.7 0 5.2 0.6 7 2 1.8-1.4 4.3-2 7-2V4c-2.7 0-5.2 0.6-7 2z"/><path d="M12 6v13"/></svg>
+    <span>Brand Story</span>
+  </a>
+  <button class="btn-ghost" id="logout-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+    Log out
+  </button>
+</nav>
+
+<main class="wrap">
+  <h1>Welcome!</h1>
+  <p class="welcome-sub">Logged in as <strong id="user-email">—</strong></p>
+
+  <div class="bonus-card">
+    <div class="bonus-video">
+      <div class="play-badge">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </div>
+    <div class="bonus-body">
+      <div class="bonus-eyebrow">Bonus Training</div>
+      <h2>A free <strong>Story Strategy Call</strong> to map your message, avatar, and offer</h2>
+      <a href="story-strategy-call-landing.html" class="btn-primary">Book Your Story Strategy Call →</a>
+    </div>
+  </div>
+
+  <section class="courses">
+    <h2 class="section-title">Your Courses</h2>
+    <div class="course-grid">
+      <a href="portal-course.html" class="course-card">
+        <div class="course-cover">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 6c-1.8-1.4-4.3-2-7-2v13c2.7 0 5.2 0.6 7 2 1.8-1.4 4.3-2 7-2V4c-2.7 0-5.2 0.6-7 2z"/><path d="M12 6v13"/></svg>
+          <div class="eyebrow">The Book</div>
+          <div class="title">Unlock the Power<br>of Your Story</div>
+        </div>
+        <div class="course-info">
+          <h3>Unlock the Power of Your Story</h3>
+          <p>Your book, plus your story-driven ChatGPT agents and masterclass.</p>
+          <div class="progress-row"><span id="lesson-progress">0/1 unlocked</span><span id="progress-pct">—</span></div>
+          <div class="progress-bar"><span id="progress-fill" style="width:0%"></span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+</main>
+
+<script>
+  const SESSION_KEY = 'bs_portal_session';
+  const BUYERS_KEY = 'bs_portal_buyers';
+
+  const email = localStorage.getItem(SESSION_KEY);
+  if (!email) {
+    window.location.href = 'portal-login.html';
+  }
+
+  const buyers = JSON.parse(localStorage.getItem(BUYERS_KEY) || '[]');
+  const buyer = buyers.find(b => b.email.toLowerCase() === (email || '').toLowerCase());
+
+  if (!buyer) {
+    localStorage.removeItem(SESSION_KEY);
+    window.location.href = 'portal-login.html';
+  } else {
+    document.getElementById('user-email').textContent = buyer.email;
+
+    const items = [buyer.purchases.book, buyer.purchases.gptMessage, buyer.purchases.gptAvatar, buyer.purchases.gptOffer, buyer.purchases.masterclass];
+    const unlocked = items.filter(Boolean).length;
+    const total = items.length;
+    document.getElementById('lesson-progress').textContent = `${unlocked}/${total} unlocked`;
+    document.getElementById('progress-pct').textContent = `${Math.round((unlocked/total)*100)}%`;
+    document.getElementById('progress-fill').style.width = `${Math.round((unlocked/total)*100)}%`;
+  }
+
+  document.getElementById('logout-btn').addEventListener('click', () => {
+    localStorage.removeItem(SESSION_KEY);
+    window.location.href = 'portal-login.html';
+  });
+</script>
+
+</body>
+</html>

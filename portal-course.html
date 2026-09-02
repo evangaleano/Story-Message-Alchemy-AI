@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unlock the Power of Your Story | Course</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     PORTAL COURSE PAGE — lesson sidebar + gated content viewer.
+     Same DEMO auth layer as portal-login.html / portal-dashboard.html.
+
+     ── EDIT ME: LESSON CONTENT ──
+     All lesson copy, links, and lock rules live in the LESSONS array
+     near the bottom of this file. Swap the placeholder hrefs
+     (book PDF, ChatGPT agent links, masterclass link) for your real
+     URLs. The three "gpt*" purchase keys are placeholders for
+     whatever CGPT upsells you actually sell — rename freely.
+     ============================================================ */
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1a1a;
+    --cream: #f8f6f1;
+    --cream-warm: #ebe8e0;
+    --cream-deep: #ded8cd;
+    --gold: #d9bc72;
+    --gold-light: #f0dda3;
+    --gold-muted: #b5924a;
+    --charcoal: #1a1a1a;
+    --charcoal-light: #2d2d2d;
+
+    --serif: 'Instrument Serif', Georgia, serif;
+    --headline: 'Montserrat', system-ui, sans-serif;
+    --sans: 'Poppins', system-ui, sans-serif;
+    --mono: 'Poppins', system-ui, sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--charcoal);
+    color: var(--cream);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  img { max-width: 100%; display: block; }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr 300px;
+    min-height: 100vh;
+  }
+
+  /* ─── LEFT SIDEBAR ─── */
+  .sidebar {
+    border-right: 1px solid rgba(255,255,255,0.08);
+    padding: 1.6rem 1.2rem;
+  }
+  .back-link {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: var(--mono); font-size: 0.76rem; color: rgba(248,246,241,0.56);
+    text-decoration: none; margin-bottom: 1.4rem;
+  }
+  .back-link svg { width: 13px; height: 13px; }
+  .course-title { font-family: var(--headline); font-weight: 700; font-size: 1.05rem; margin-bottom: 1.6rem; line-height: 1.3; }
+
+  .group-label {
+    font-family: var(--mono); font-weight: 600; font-size: 0.66rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: rgba(248,246,241,0.4);
+    margin: 1.4rem 0 0.6rem;
+  }
+  .group-label:first-of-type { margin-top: 0; }
+
+  .lesson-item {
+    display: flex; align-items: center; gap: 0.7rem;
+    padding: 0.65rem 0.6rem; border-radius: 6px; cursor: pointer;
+    font-size: 0.9rem; color: rgba(248,246,241,0.82);
+  }
+  .lesson-item:hover { background: rgba(255,255,255,0.05); }
+  .lesson-item.active { background: rgba(196,169,98,0.14); color: var(--cream); }
+  .lesson-item .icon { width: 16px; height: 16px; flex-shrink: 0; color: rgba(248,246,241,0.4); }
+  .lesson-item.active .icon { color: var(--gold-light); }
+  .lesson-item.locked { color: rgba(248,246,241,0.35); }
+  .lesson-item.locked .icon { color: rgba(248,246,241,0.25); }
+  .lesson-item .lock-badge { margin-left: auto; width: 13px; height: 13px; color: rgba(248,246,241,0.3); }
+
+  /* ─── MAIN VIEWER ─── */
+  .viewer { padding: 2.4rem 3rem; overflow-y: auto; }
+  .viewer-eyebrow {
+    font-family: var(--mono); font-weight: 600; font-size: 0.72rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--gold-light); margin-bottom: 0.6rem;
+  }
+  .viewer h1 { font-family: var(--headline); font-weight: 700; font-size: clamp(1.5rem, 2.6vw, 2rem); margin-bottom: 1.8rem; }
+
+  .content-card {
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 2.4rem; max-width: 640px;
+  }
+  .content-card.locked-card { text-align: center; }
+
+  .book-cover-mini {
+    width: 160px; margin: 0 auto 1.6rem;
+    border-radius: 4px; overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+
+  .content-card p { color: rgba(248,246,241,0.72); margin-bottom: 1.6rem; max-width: 480px; }
+  .content-card.locked-card p { margin-left: auto; margin-right: auto; }
+
+  .btn-primary, .btn-secondary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+    padding: 0.9rem 1.6rem; border-radius: 4px; border: none; cursor: pointer;
+    font-family: var(--sans); font-size: 0.88rem; font-weight: 700; letter-spacing: 0.03em;
+    text-decoration: none; transition: background 0.2s;
+  }
+  .btn-primary { background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%); color: var(--charcoal); }
+  .btn-primary:hover { filter: brightness(1.06); }
+  .btn-secondary { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--cream); margin-left: 0.8rem; }
+  .btn-secondary:hover { border-color: var(--gold); }
+
+  .lock-icon-big { width: 40px; height: 40px; color: var(--gold-muted); margin: 0 auto 1.2rem; }
+
+  /* ─── RIGHT SIDEBAR ─── */
+  .right-rail { border-left: 1px solid rgba(255,255,255,0.08); padding: 2rem 1.6rem; }
+  .rail-eyebrow { font-family: var(--mono); font-weight: 600; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-light); margin-bottom: 0.6rem; }
+  .rail-card h3 { font-family: var(--headline); font-weight: 700; font-size: 1.05rem; line-height: 1.35; margin-bottom: 1rem; }
+  .rail-card p { font-size: 0.86rem; color: rgba(248,246,241,0.6); margin-bottom: 1.3rem; }
+  .rail-btn {
+    display: block; width: 100%; text-align: center;
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%); color: var(--charcoal); padding: 0.85rem; border-radius: 4px;
+    font-size: 0.84rem; font-weight: 700; text-decoration: none; margin-bottom: 0.4rem;
+  }
+  .rail-note { font-family: var(--mono); font-size: 0.7rem; color: rgba(248,246,241,0.4); text-align: center; margin-bottom: 2rem; }
+
+  .resource-label { font-family: var(--mono); font-weight: 600; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(248,246,241,0.4); margin-bottom: 0.8rem; }
+  .resource-link {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.7rem 0.8rem; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(248,246,241,0.82); text-decoration: none; font-size: 0.85rem; margin-bottom: 0.6rem;
+  }
+  .resource-link:hover { border-color: var(--gold); }
+  .resource-link svg { width: 15px; height: 15px; color: var(--gold-light); }
+
+  @media (max-width: 1080px) {
+    .layout { grid-template-columns: 220px 1fr; }
+    .right-rail { display: none; }
+  }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ═══════════════ LEFT SIDEBAR ═══════════════ -->
+  <aside class="sidebar">
+    <a href="portal-dashboard.html" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      All Courses
+    </a>
+    <div class="course-title">Unlock the Power of Your Story</div>
+    <div id="lesson-list"></div>
+  </aside>
+
+  <!-- ═══════════════ MAIN VIEWER ═══════════════ -->
+  <main class="viewer" id="viewer">
+    <!-- populated by JS -->
+  </main>
+
+  <!-- ═══════════════ RIGHT RAIL ═══════════════ -->
+  <aside class="right-rail">
+    <div class="rail-card">
+      <div class="rail-eyebrow">Go Further</div>
+      <h3>Ready to build your full story-driven message, avatar &amp; offer?</h3>
+      <p>Book a free Story Strategy Call and we'll map it out with you personally.</p>
+      <a href="story-strategy-call-landing.html" class="rail-btn">Book Your Call →</a>
+    </div>
+    <div class="rail-note">1:1 with our team · no cost</div>
+
+    <div class="resource-label">Resources</div>
+    <a href="assets/unlock-the-power-of-your-story.pdf" class="resource-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+      Download The Book
+    </a>
+    <a href="mailto:support@brand-story.agency" class="resource-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16v16H4z"/><path d="M4 6l8 7 8-7"/></svg>
+      Contact Support
+    </a>
+  </aside>
+
+</div>
+
+<script>
+  const SESSION_KEY = 'bs_portal_session';
+  const BUYERS_KEY = 'bs_portal_buyers';
+
+  const email = localStorage.getItem(SESSION_KEY);
+  if (!email) window.location.href = 'portal-login.html';
+
+  const buyers = JSON.parse(localStorage.getItem(BUYERS_KEY) || '[]');
+  const buyer = buyers.find(b => b.email.toLowerCase() === (email || '').toLowerCase());
+  if (!buyer) {
+    localStorage.removeItem(SESSION_KEY);
+    window.location.href = 'portal-login.html';
+  }
+
+  // ── EDIT ME: LESSON CONTENT ──
+  // `unlocked` reads the buyer's purchase flags. Swap hrefs for real URLs.
+  const LESSONS = [
+    {
+      id: 'book',
+      group: 'The Book',
+      title: 'Unlock the Power of Your Story (Digital)',
+      icon: 'book',
+      unlocked: () => buyer.purchases.book,
+      render: () => `
+        <div class="viewer-eyebrow">Digital Book</div>
+        <h1>Unlock the Power of Your Story</h1>
+        <div class="content-card">
+          <div class="book-cover-mini"><img src="Power Story Book Cover V3.png" alt="Unlock the Power of Your Story book cover"></div>
+          <p>Your full 33-page book: build an authentic personal brand, find your story-driven message, and become a lighthouse to your people.</p>
+          <a href="assets/unlock-the-power-of-your-story.pdf" class="btn-primary">Download PDF →</a>
+        </div>
+      `
+    },
+    {
+      id: 'gptMessage',
+      group: 'Your ChatGPT Agents',
+      title: 'Story Driven Message GPT',
+      icon: 'gpt',
+      unlocked: () => buyer.purchases.gptMessage,
+      render: () => `
+        <div class="viewer-eyebrow">ChatGPT Agent</div>
+        <h1>Story Driven Message GPT</h1>
+        <div class="content-card">
+          <p>Your custom GPT that alchemizes your story into a clear, concise "I believe" message statement — without replacing your voice or authenticity.</p>
+          <a href="#" class="btn-primary">Open in ChatGPT →</a>
+          <a href="assets/story-driven-message-gpt-guide.pdf" class="btn-secondary">Download Prompt Guide</a>
+        </div>
+      `
+    },
+    {
+      id: 'gptAvatar',
+      group: 'Your ChatGPT Agents',
+      title: 'Story Driven Client GPT',
+      icon: 'gpt',
+      unlocked: () => buyer.purchases.gptAvatar,
+      render: () => `
+        <div class="viewer-eyebrow">ChatGPT Agent</div>
+        <h1>Story Driven Client GPT</h1>
+        <div class="content-card">
+          <p>Your custom GPT that maps your most aligned dream client avatar directly from the story work you did in the book.</p>
+          <a href="#" class="btn-primary">Open in ChatGPT →</a>
+          <a href="assets/story-driven-client-gpt-guide.pdf" class="btn-secondary">Download Prompt Guide</a>
+        </div>
+      `
+    },
+    {
+      id: 'gptOffer',
+      group: 'Your ChatGPT Agents',
+      title: 'Story Driven Offer GPT',
+      icon: 'gpt',
+      unlocked: () => buyer.purchases.gptOffer,
+      render: () => `
+        <div class="viewer-eyebrow">ChatGPT Agent</div>
+        <h1>Story Driven Offer GPT</h1>
+        <div class="content-card">
+          <p>Your custom GPT that turns your message and avatar into a clear, story-driven offer ready to sell.</p>
+          <a href="#" class="btn-primary">Open in ChatGPT →</a>
+          <a href="assets/story-driven-offer-gpt-guide.pdf" class="btn-secondary">Download Prompt Guide</a>
+        </div>
+      `
+    },
+    {
+      id: 'masterclass',
+      group: 'Mini Course',
+      title: 'Story-Driven Offer Masterclass',
+      icon: 'play',
+      unlocked: () => buyer.purchases.masterclass,
+      render: () => `
+        <div class="viewer-eyebrow">Mini Course</div>
+        <h1>Story-Driven Offer Masterclass</h1>
+        <div class="content-card">
+          <p>The full video masterclass walking you through turning your book's frameworks into a packaged, sellable offer.</p>
+          <a href="#" class="btn-primary">Watch Now →</a>
+        </div>
+      `
+    }
+  ];
+
+  const ICONS = {
+    book: '<path d="M12 6c-1.8-1.4-4.3-2-7-2v13c2.7 0 5.2 0.6 7 2 1.8-1.4 4.3-2 7-2V4c-2.7 0-5.2 0.6-7 2z"/><path d="M12 6v13"/>',
+    gpt: '<circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/>',
+    play: '<circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4z"/>',
+    lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'
+  };
+
+  function lockedView(lesson) {
+    return `
+      <div class="viewer-eyebrow">Locked</div>
+      <h1>${lesson.title}</h1>
+      <div class="content-card locked-card">
+        <svg class="lock-icon-big" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">${ICONS.lock}</svg>
+        <p>This isn't part of your purchase yet. Grab it to unlock instant access.</p>
+        <a href="power-of-your-story-landing.html" class="btn-primary">Unlock This →</a>
+      </div>
+    `;
+  }
+
+  const list = document.getElementById('lesson-list');
+  const viewer = document.getElementById('viewer');
+  let groupsRendered = new Set();
+  let activeId = null;
+
+  function renderSidebar() {
+    list.innerHTML = '';
+    groupsRendered.clear();
+    LESSONS.forEach(lesson => {
+      if (!groupsRendered.has(lesson.group)) {
+        const label = document.createElement('div');
+        label.className = 'group-label';
+        label.textContent = lesson.group;
+        list.appendChild(label);
+        groupsRendered.add(lesson.group);
+      }
+      const unlocked = lesson.unlocked();
+      const item = document.createElement('div');
+      item.className = 'lesson-item' + (lesson.id === activeId ? ' active' : '') + (unlocked ? '' : ' locked');
+      item.innerHTML = `
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">${ICONS[lesson.icon]}</svg>
+        <span>${lesson.title}</span>
+        ${!unlocked ? `<svg class="lock-badge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${ICONS.lock}</svg>` : ''}
+      `;
+      item.addEventListener('click', () => selectLesson(lesson.id));
+      list.appendChild(item);
+    });
+  }
+
+  function selectLesson(id) {
+    activeId = id;
+    const lesson = LESSONS.find(l => l.id === id);
+    viewer.innerHTML = lesson.unlocked() ? lesson.render() : lockedView(lesson);
+    renderSidebar();
+  }
+
+  // Land on the first unlocked lesson, or the book by default.
+  const firstUnlocked = LESSONS.find(l => l.unlocked()) || LESSONS[0];
+  selectLesson(firstUnlocked.id);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unlock the Power of Your Story | Brand Story</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     Palette matches brand-story.agency: charcoal/cream/gold tokens
+     pulled directly from the live site's CSS. Hero + proof-band use
+     the charcoal dark surface with a warm gold "lighthouse" glow.
+     ============================================================ */
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* Brand Story Agency palette — matched to brand-story.agency */
+    --ink: #1a1a1a;
+    --ink-soft: #333333;
+    --ink-muted: #6b6b6b;
+    --ink-faint: #a3a3a3;
+    --cream: #f8f6f1;
+    --cream-warm: #ebe8e0;
+    --cream-deep: #ded8cd;
+    /* gold/charcoal matched to brand-story.agency's live theme tokens */
+    --gold: #d9bc72;
+    --gold-light: #f0dda3;
+    --gold-muted: #b5924a;
+
+    --charcoal: #1a1a1a;
+    --charcoal-light: #2d2d2d;
+
+    --serif: 'Instrument Serif', Georgia, serif;
+    --headline: 'Montserrat', system-ui, sans-serif;
+    --sans: 'Poppins', system-ui, sans-serif;
+    --mono: 'Poppins', system-ui, sans-serif;
+    --max: 1100px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--cream);
+    color: var(--ink);
+    font-size: 17px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  img { max-width: 100%; display: block; }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 2rem; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.1rem 2rem;
+    background: rgba(10,10,10,0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .nav-logo {
+    font-family: var(--headline); font-size: 1.05rem; font-weight: 700;
+    color: var(--cream); text-decoration: none; letter-spacing: 0.01em;
+  }
+  .nav-cta {
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%); color: var(--charcoal);
+    padding: 0.55rem 1.3rem; border-radius: 2px;
+    font-size: 0.8rem; font-weight: 700; text-decoration: none;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    transition: filter 0.2s;
+  }
+  .nav-cta:hover { filter: brightness(1.06); }
+
+  /* ─── HERO (dusk / lighthouse) ─── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 7rem 0 4rem;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 70% 50% at 78% 20%, rgba(212,188,122,0.14) 0%, transparent 60%),
+      linear-gradient(170deg, var(--charcoal) 0%, var(--charcoal-light) 100%);
+    color: var(--cream);
+  }
+
+  /* signature element: sweeping lighthouse beam, static gradient wedge (Claude Code: consider a slow CSS rotation) */
+  .beam {
+    position: absolute; top: -10%; right: 6%; width: 46vw; height: 130%;
+    background: conic-gradient(from -18deg at 20% 15%, rgba(212,188,122,0.16), transparent 22%);
+    pointer-events: none; z-index: 1;
+  }
+
+  .hero-grid {
+    position: relative; z-index: 2;
+    max-width: var(--max); margin: 0 auto; padding: 0 2rem;
+    display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 3.5rem; align-items: center;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mono); font-weight: 600; font-size: 0.75rem;
+    color: var(--gold-light); letter-spacing: 0.18em; text-transform: uppercase;
+    margin-bottom: 1.4rem; display: flex; align-items: center; gap: 0.9rem;
+  }
+  .hero-eyebrow::before { content: ''; width: 34px; height: 1px; background: var(--gold-light); }
+
+  .hero-headline {
+    font-family: var(--headline); font-weight: 700; line-height: 1;
+    letter-spacing: -0.02em;
+    font-size: clamp(2.6rem, 4.6vw, 4rem);
+    margin-bottom: 1.3rem;
+  }
+  .hero-headline em { font-style: normal; color: var(--gold-light); }
+
+  .hero-sub {
+    font-size: 1.08rem; font-weight: 300; color: rgba(248,246,241,0.82);
+    max-width: 520px; line-height: 1.75; margin-bottom: 2.1rem;
+  }
+
+  .hero-actions { display: flex; align-items: center; gap: 1.3rem; flex-wrap: wrap; margin-bottom: 1.1rem; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%); color: var(--charcoal);
+    padding: 1rem 2.1rem; border-radius: 2px;
+    font-size: 0.9rem; font-weight: 700; text-decoration: none;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    transition: filter 0.2s, transform 0.1s;
+    display: inline-flex; align-items: center; gap: 0.6rem;
+  }
+  .btn-primary:hover { filter: brightness(1.06); transform: translateY(-1px); }
+
+  .price-tag {
+    font-family: var(--mono); font-size: 0.95rem; color: var(--cream);
+  }
+  .price-tag strong { color: var(--gold-light); font-size: 1.2rem; }
+  .price-tag s { color: rgba(248,246,241,0.56); margin-right: 0.4rem; }
+
+  .hero-trust {
+    font-family: var(--mono); font-size: 0.75rem; color: rgba(248,246,241,0.56);
+    letter-spacing: 0.03em;
+  }
+
+  .hero-cover {
+    position: relative; z-index: 2;
+    filter: drop-shadow(0 30px 60px rgba(0,0,0,0.5));
+  }
+  .hero-cover img { border-radius: 3px; }
+
+  @media (max-width: 880px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-cover { max-width: 280px; margin: 0 auto; order: -1; }
+  }
+
+  /* ─── BEAM DIVIDER (repeat signature motif between sections) ─── */
+  .beam-divider {
+    height: 90px; position: relative; background: var(--cream);
+    overflow: hidden;
+  }
+  .beam-divider svg { position: absolute; top: 0; left: 50%; transform: translateX(-50%); }
+
+  /* ─── SECTION SCAFFOLDING ─── */
+  section { padding: 5.5rem 0; }
+  .section-cream { background: var(--cream); }
+  .section-warm { background: var(--cream-warm); }
+  .section-navy { background: linear-gradient(180deg, var(--charcoal-light) 0%, var(--charcoal) 100%); color: var(--cream); }
+
+  .eyebrow {
+    font-family: var(--mono); font-weight: 600; font-size: 0.75rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--gold-muted);
+    display: flex; align-items: center; gap: 0.9rem; margin-bottom: 1.1rem;
+  }
+  .eyebrow::before { content: ''; width: 34px; height: 1px; background: var(--gold-muted); }
+  .section-navy .eyebrow { color: var(--gold-light); }
+  .section-navy .eyebrow::before { background: var(--gold-light); }
+
+  h2 {
+    font-family: var(--headline); font-weight: 700; line-height: 1.04;
+    letter-spacing: -0.02em;
+    font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+    max-width: 780px; margin-bottom: 1.2rem;
+  }
+  h2 em { font-style: normal; color: var(--gold-muted); }
+  .section-navy h2 em { color: var(--gold-light); }
+
+  .lede {
+    font-size: 1.08rem; color: var(--ink-soft); max-width: 640px; font-weight: 300;
+  }
+  p.lede + p.lede { margin-top: 1.1rem; }
+  .section-navy .lede { color: rgba(248,246,241,0.82); }
+
+  /* ─── HOOK / AGITATION ─── */
+  .book-quote {
+    border-left: 2px solid var(--gold);
+    padding: 0.3rem 0 0.3rem 1.6rem;
+    margin-top: 2.5rem;
+    max-width: 760px;
+  }
+  .book-quote p {
+    font-family: var(--serif); font-style: italic; font-weight: 400;
+    font-size: clamp(1.1rem, 1.8vw, 1.3rem); line-height: 1.65;
+    color: rgba(248,246,241,0.9); margin-bottom: 1rem;
+  }
+  .book-quote-attr {
+    font-family: var(--mono); font-weight: 600; font-size: 0.75rem; letter-spacing: 0.05em;
+    text-transform: uppercase; color: rgba(248,246,241,0.5); margin-top: 0.6rem;
+  }
+
+  /* ─── AUTHOR ─── */
+  .author-grid {
+    display: grid; grid-template-columns: 0.7fr 1.3fr; gap: 3rem; align-items: start;
+  }
+  .author-name { font-family: var(--headline); font-weight: 700; font-size: 1.3rem; margin-bottom: 0.3rem; }
+  .author-role { font-family: var(--mono); font-weight: 600; font-size: 0.78rem; color: var(--ink-muted); letter-spacing: 0.05em; text-transform: uppercase; }
+  .author-copy p { margin-bottom: 1.1rem; max-width: 620px; }
+  @media (max-width: 800px) { .author-grid { grid-template-columns: 1fr; } }
+
+  /* ─── FRAMEWORKS ─── */
+  .pillars {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.8rem; margin-top: 2.6rem;
+  }
+  .pillar {
+    background: var(--cream); border: 1px solid var(--cream-deep); border-radius: 4px;
+    padding: 2rem 1.7rem;
+  }
+  .pillar-icon { width: 34px; height: 34px; margin-bottom: 1.1rem; color: var(--gold-muted); }
+  .pillar h3 { font-family: var(--headline); font-size: 1.25rem; font-weight: 700; margin-bottom: 0.7rem; }
+  .pillar p { font-size: 0.95rem; color: var(--ink-soft); }
+  @media (max-width: 880px) { .pillars { grid-template-columns: 1fr; } }
+
+  /* ─── WHO IT'S FOR ─── */
+  .for-list { list-style: none; margin-top: 2.2rem; display: grid; gap: 0.9rem; max-width: 640px; }
+  .for-list li {
+    display: flex; gap: 0.9rem; align-items: flex-start;
+    font-size: 1.02rem; color: var(--ink-soft);
+  }
+  .for-list li::before {
+    content: ''; flex-shrink: 0; width: 8px; height: 8px; margin-top: 0.5rem;
+    background: var(--gold); border-radius: 50%;
+  }
+
+  /* ─── PROOF STRIP ─── */
+  .proof-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.4rem; margin-top: 2.6rem;
+  }
+  .proof-card {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px; padding: 1.6rem 1.4rem;
+  }
+  .proof-stat { font-family: var(--headline); font-weight: 800; font-size: 1.6rem; color: var(--gold-light); margin-bottom: 0.5rem; }
+  .proof-label { font-size: 0.88rem; color: rgba(248,246,241,0.68); line-height: 1.5; }
+  .proof-name { font-family: var(--mono); font-weight: 600; font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; color: rgba(248,246,241,0.5); margin-top: 0.8rem; }
+  @media (max-width: 900px) { .proof-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .proof-grid { grid-template-columns: 1fr; } }
+
+  /* ─── OFFER / WHAT YOU GET ─── */
+  .offer-box {
+    display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 0;
+    border: 1px solid var(--cream-deep); border-radius: 6px; overflow: hidden;
+    margin-top: 2.5rem; background: #fff;
+  }
+  .offer-left { padding: 2.6rem; }
+  .offer-left ul { list-style: none; display: grid; gap: 0.85rem; margin-top: 1.4rem; }
+  .offer-left li { display: flex; gap: 0.7rem; font-size: 0.98rem; color: var(--ink-soft); }
+  .offer-left li::before { content: '✓'; color: var(--gold-muted); font-weight: 700; }
+  .offer-right {
+    background: var(--charcoal); color: var(--cream);
+    padding: 2.6rem; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center;
+  }
+  .offer-price { font-family: var(--headline); font-weight: 800; font-size: 3.2rem; color: var(--gold-light); line-height: 1; }
+  .offer-price sup { font-size: 1.4rem; top: -1.4rem; }
+  .offer-price-note { font-family: var(--mono); font-size: 0.75rem; color: rgba(248,246,241,0.56); margin: 0.6rem 0 1.6rem; }
+  @media (max-width: 800px) { .offer-box { grid-template-columns: 1fr; } }
+
+  /* ─── GHL ORDER FORM MOUNT POINT ───
+     Evan, when you wire this up in GHL:
+     1. Import this page as a funnel step (Website Builder -> Custom Code,
+        or paste as an HTML element inside a blank template).
+     2. Drop GHL's native Order Form / Stripe element into the
+        #ghl-order-form div below, replacing the placeholder markup.
+     3. In that order form's settings, set "Redirect URL after payment"
+        to your Thank You step's URL (power-of-your-story-thank-you.html
+        in this project, or whatever GHL generates once it's a funnel
+        step) so buyers land on the confirmation page, not this one.
+     Keep the div id so the checkout widget has a clean anchor. */
+  #ghl-order-form {
+    margin-top: 1.6rem; width: 100%; max-width: 320px;
+    border: 1px dashed rgba(212,188,122,0.4); border-radius: 4px;
+    padding: 1.4rem; font-family: var(--mono); font-size: 0.78rem;
+    color: rgba(248,246,241,0.56); text-align: left;
+  }
+
+  /* ─── GUARANTEE ─── */
+  .guarantee {
+    display: flex; gap: 1.6rem; align-items: flex-start; max-width: 720px; margin-top: 2rem;
+  }
+  .guarantee-badge {
+    flex-shrink: 0; width: 64px; height: 64px; border: 1.5px solid var(--gold-muted);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-family: var(--headline); font-weight: 700; font-size: 0.68rem; text-align: center; color: var(--gold-muted);
+    line-height: 1.2; padding: 0.4rem;
+  }
+
+  /* ─── FAQ ─── */
+  .faq-item {
+    border-bottom: 1px solid var(--cream-deep); padding: 1.5rem 0;
+  }
+  .faq-q {
+    font-family: var(--headline); font-size: 1.1rem; font-weight: 600;
+    cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  }
+  .faq-a { font-size: 0.98rem; color: var(--ink-soft); margin-top: 0.8rem; max-width: 640px; display: none; }
+  .faq-a p { margin-bottom: 0.9rem; }
+  .faq-a p:last-child { margin-bottom: 0; }
+  .faq-item.open .faq-a { display: block; }
+  .faq-item.open .faq-q::after { transform: rotate(45deg); }
+  .faq-q::after {
+    content: '+'; font-family: var(--sans); font-size: 1.4rem; color: var(--gold-muted);
+    transition: transform 0.2s; flex-shrink: 0;
+  }
+
+  /* ─── FINAL CTA ─── */
+  .final-cta { text-align: center; padding: 6rem 0; }
+  .final-cta h2 { margin-left: auto; margin-right: auto; }
+  .final-cta .lede { margin-left: auto; margin-right: auto; }
+
+  footer {
+    background: var(--charcoal); color: rgba(248,246,241,0.5); padding: 2.4rem 0;
+    font-family: var(--mono); font-size: 0.78rem; text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">Brand Story</a>
+  <a href="#order" class="nav-cta">Get the Book: $5</a>
+</nav>
+
+<!-- ═══════════════════════ HERO ═══════════════════════ -->
+<header class="hero">
+  <div class="beam" aria-hidden="true"></div>
+  <div class="hero-grid">
+    <div>
+      <div class="hero-eyebrow">New Book · Instant Digital Access</div>
+      <h1 class="hero-headline">Unlock the Power of <em>Your Story</em></h1>
+      <p class="hero-sub">
+        A guide to building an authentic personal brand, finding your story-driven message,
+        and becoming a lighthouse to your people.
+      </p>
+      <div class="hero-actions">
+        <a href="#order" class="btn-primary">Get Instant Access: $5 →</a>
+        <span class="price-tag"><s>$33</s> Digital download <strong>$5</strong></span>
+      </div>
+      <div class="hero-trust">Read in under an hour · Instant access · 30-day guarantee</div>
+    </div>
+    <div class="hero-cover">
+      <!-- TEMP: local file for preview. Upload to Cloudinary/GHL media library
+           and swap this src for the hosted URL before publishing the funnel. -->
+      <img src="Power Story Book Cover V3.png" alt="Unlock the Power of Your Story book cover: uncover your story-driven message, build the foundations of an authentic personal brand, and become a lighthouse for your aligned dream community">
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════ HOOK / AGITATION ═══════════════════════ -->
+<section class="section-navy">
+  <div class="wrap">
+    <h2>You've tried all of the marketing tactics and posted the content consistently... But for
+      some reason your content, your message, and your online positioning still isn't as
+      magnetic or aligned as you know it could be...</h2>
+    <p class="lede">
+      You've been having to wade through misaligned, headache clients while feeling a deep
+      yearning to work with the higher tier dream clients that you sense are out there, if
+      only you could find the way to call them in...
+    </p>
+    <p class="lede">
+      The answer is not more marketing strategies or tactics, or ideal client profile build outs...
+    </p>
+    <p class="lede">
+      The answer is to go within to see and understand the unique value your story has shaped
+      within you, and from that authentic place, create your story, values, vision and method
+      that reveals your most aligned client avatar, solidifying your mission and message in a
+      way that holds the power to ignite your movement.
+    </p>
+    <blockquote class="book-quote">
+      <p>"I spent hundreds of hours over nine years, from 2010 to 2019, and over $27,000 in
+      marketing business training seminars trying to get clear on how to define who my
+      customer was, what their pain points were, and what services I could offer to help
+      my ideal customer solve their problems.</p>
+      <p>Clarity came from doing my 2019 website brand story video with the insightful,
+      master communicator and LA filmmaker Evan Galeano."</p>
+      <div class="book-quote-attr">— Dr. Andrea Renee Rivera</div>
+    </blockquote>
+  </div>
+</section>
+
+<div class="beam-divider" aria-hidden="true">
+  <svg width="240" height="90" viewBox="0 0 240 90" xmlns="http://www.w3.org/2000/svg">
+    <path d="M120 0 L60 90" stroke="#c4a962" stroke-width="1" opacity="0.35"/>
+    <path d="M120 0 L180 90" stroke="#c4a962" stroke-width="1" opacity="0.35"/>
+    <path d="M120 0 L120 90" stroke="#c4a962" stroke-width="1" opacity="0.6"/>
+  </svg>
+</div>
+
+<!-- ═══════════════════════ AUTHOR ═══════════════════════ -->
+<section class="section-cream">
+  <div class="wrap author-grid">
+    <div>
+      <div class="author-name">Evan Galeano</div>
+      <div class="author-role">Founder, Brand Story</div>
+    </div>
+    <div class="author-copy">
+      <div class="eyebrow">A Message I Went Through Hell to Deliver</div>
+      <p>
+        In 2018, I started my video business with -$126 in my bank account, sweating through
+        a Ross dress shirt at local networking events. That same year, my autistic brother fell
+        through our front window during an outburst, and I learned my parents might have to
+        sell the house.
+        I had one thing: a 7-minute documentary about our family that had not been seen because
+        we were too private to share it. We posted it anyway. A week and 300 shares later, our
+        community had raised a year of living expenses for my family to get back on their feet.
+        Today they still live in my brother and I's childhood home, and as I walk up to the
+        house these days tears still often well up in my eyes.
+      </p>
+      <p>
+        By mid 2019, I was hitting my first $30k+ months in business by repeating that same
+        strategy: helping businesses and nonprofits capture their stories with an authentic,
+        mini-documentary approach. I went from shooting website videos that boosted SEO and
+        helped save brick-and-mortar businesses in my hometown to directing brand films for a
+        $2B info-product company, then consulting
+        on brand narrative for startups that went on to raise over $9 million in funding from
+        story-driven launches and pitch decks. A few years later, I got on stage for a 30 minute keynote at a
+        mansion mastermind, overcoming my fear of public speaking, and walked away with $37k
+        in new business deals in a single day using the same frameworks I am giving you in
+        this book.
+      </p>
+      <p>
+        After a hell of a journey, I discovered that within every leader's story lies a uniquely
+        powerful message that only they can tell. AI cannot replicate it, and competitors cannot
+        touch it.
+      </p>
+      <p>
+        In this book, I will reveal how to clarify and articulate that message in a way that
+        communicates the power of the work you do and the one-of-a-kind leader you are.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ FRAMEWORKS ═══════════════════════ -->
+<section class="section-warm">
+  <div class="wrap">
+    <div class="eyebrow">The Frameworks Inside</div>
+    <h2>Everything inside the book, across five frameworks.</h2>
+    <p class="lede">Each one builds on the last: from finding the stories, to structuring them, to knowing what to ask, tips on capturing them on camera, and turning them into content and ads that convert.</p>
+    <div class="pillars">
+      <div class="pillar">
+        <svg class="pillar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+        <h3>The 3 Most Powerful Stories to Tell</h3>
+        <p>Your Why, Fight, and Impact stories: the origin that shaped you, the stand you took, and the proof that it works.</p>
+      </div>
+      <div class="pillar">
+        <svg class="pillar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 12c3-6 9-6 9 0s6 6 9 0"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></svg>
+        <h3>The Brand Leader's Journey</h3>
+        <p>A twist on the hero's journey, built for founders and leaders: the arc that turns your origin story into one your audience can see themselves inside of.</p>
+      </div>
+      <div class="pillar">
+        <svg class="pillar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 4h16v12H8l-4 4z"/></svg>
+        <h3>The 5 Core Story Questions</h3>
+        <p>The exact questions to ask before creating any piece of "lighthouse content" (a website film, a post, a pitch) so even cold audiences online can feel like they know you and have met you in person.</p>
+      </div>
+      <div class="pillar">
+        <svg class="pillar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 7h11v10H3z"/><path d="M14 10l7-4v12l-7-4z"/></svg>
+        <h3>The Deep-Cut Testimonial Framework</h3>
+        <p>The same questions we've used at our video agency for 8 years to get past surface-level answers and capture testimonials that have moved both interviewees and the audiences watching to tears.</p>
+      </div>
+      <div class="pillar">
+        <svg class="pillar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2v6M9 22h6l-1-6h-4l-1 6zM7 12a5 5 0 0 1 10 0c0 2.5-2 3.5-2 6H9c0-2.5-2-3.5-2-6z"/></svg>
+        <h3>The Concise Story-Driven Ad Framework</h3>
+        <p>The look into the story structure of the ad that got Dr. Henry 5X new patients, from his very first shoot, in 30 days. In his words, that strategic move "saved his business."</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ WHO IT'S FOR ═══════════════════════ -->
+<section class="section-cream">
+  <div class="wrap">
+    <div class="eyebrow">Who This Is For</div>
+    <h2>Built for entrepreneurs who are driven by more than just the money.</h2>
+    <ul class="for-list">
+      <li>Intuitive coaches like Alanna, who went from charging hourly, not knowing where her next client would come from, to finding her niche, packaging her story driven offer and hitting her first $28k month from 3 clients.</li>
+      <li>Personal brands like Dr. Higgins, who my team has helped go from 0 social media followers to 75k, along with hundreds of qualified leads each month.</li>
+      <li>Life coaches like Cuyla, whose brand story film went on to launch her coaching business to a $10k+ month, her very first month in business.</li>
+      <li>National brands like Agora Financial, Portwest and West Coast Arborists, with inspiring films we captured that went on to achieve viral campaigns.</li>
+      <li>Nonprofits like Greatness Collective, whose founder expressed the films we captured with these frameworks would go on to "10X their community."</li>
+    </ul>
+  </div>
+</section>
+
+<div class="beam-divider" aria-hidden="true">
+  <svg width="240" height="90" viewBox="0 0 240 90" xmlns="http://www.w3.org/2000/svg">
+    <path d="M120 0 L60 90" stroke="#c4a962" stroke-width="1" opacity="0.35"/>
+    <path d="M120 0 L180 90" stroke="#c4a962" stroke-width="1" opacity="0.35"/>
+    <path d="M120 0 L120 90" stroke="#c4a962" stroke-width="1" opacity="0.6"/>
+  </svg>
+</div>
+
+<!-- ═══════════════════════ PROOF ═══════════════════════ -->
+<section class="section-navy">
+  <div class="wrap">
+    <div class="eyebrow">This Isn't Theory</div>
+    <h2>The methodology in this book <em>created transformative results</em> for real people.</h2>
+    <div class="proof-grid">
+      <div class="proof-card">
+        <div class="proof-stat">$30K → $285K</div>
+        <div class="proof-label">Revenue from their first rebranded retreat, within six months</div>
+        <div class="proof-name">Jon Block &amp; Dr. Mansi Shah, Abundance Retreats</div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-stat">0 → 75K+</div>
+        <div class="proof-label">Followers across platforms, with monthly organic content and ads incorporating our frameworks</div>
+        <div class="proof-name">Dr. Higgins, Interventional Radiologist</div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-stat">Doubled revenue</div>
+        <div class="proof-label">and grew their main account from 5k to 30k+ followers</div>
+        <div class="proof-name">Brian Kong, Human Wellness Centers</div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-stat">5 → 25</div>
+        <div class="proof-label">New patients within 30 days of one story-driven ad</div>
+        <div class="proof-name">Dr. Henry Qui, Wakewell Sleep Clinic</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ OFFER / ORDER ═══════════════════════ -->
+<section class="section-warm" id="order">
+  <div class="wrap">
+    <div class="eyebrow">Get the Book</div>
+    <h2>Everything you need to find the story you've been sitting on.</h2>
+    <div class="offer-box">
+      <div class="offer-left">
+        <p class="lede">Unlock the Power of Your Story: instant digital download.</p>
+        <p style="margin-top: 1rem; color: var(--ink-soft); font-size: 0.98rem; max-width: 560px;">
+          This book is purposefully short and sweet. 33 pages, $5. It's priced this low because
+          I'd rather get these frameworks into your hands today than have you sit on the fence —
+          it's built to pack a punch in under an hour, just like our mini-documentaries distill
+          powerful brand stories into 3 minutes.
+        </p>
+        <p style="margin-top: 1rem; color: var(--ink-soft); font-size: 0.98rem; max-width: 560px;">
+          This was not designed to sit half-read on a nightstand like another 300-page marketing
+          book. Every page here is designed to move you forward, all while exemplifying concise
+          storytelling. No filler, all killer.
+        </p>
+        <ul>
+          <li>The complete book: build an authentic personal brand, find your story-driven message, become a lighthouse to your people</li>
+          <li>"The 3 most powerful stories to tell" framework that landed me $37k+ in new business from stage</li>
+          <li>Read instantly on any device, no waiting on shipping</li>
+        </ul>
+      </div>
+      <div class="offer-right">
+        <div class="offer-price"><sup>$</sup>5</div>
+        <div class="offer-price-note">One-time payment · instant access</div>
+        <!-- GHL order form embeds here — see comment in <style> above -->
+        <div id="ghl-order-form">
+          [ GHL order form widget mounts here. Replace this placeholder
+          with GHL's native Order Form element, and set its post-payment
+          redirect to the Thank You page so buyers land there after
+          checkout, not back on this page. ]
+        </div>
+      </div>
+    </div>
+
+    <div class="guarantee">
+      <div class="guarantee-badge">30 DAY GUARANTEE</div>
+      <p class="lede">
+        If you read it and it doesn't help you articulate who you are and what you do
+        more powerfully than ever before, email us for a full refund.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ FAQ ═══════════════════════ -->
+<section class="section-cream">
+  <div class="wrap" style="max-width: 760px;">
+    <div class="eyebrow">Questions</div>
+    <h2>Before you get the book</h2>
+
+    <div class="faq-item open">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is this a physical book or a digital download?</div>
+      <div class="faq-a">It's an instant digital download. You can start reading within a minute of purchasing, on your phone, tablet, or computer.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">I'm not in the wellness space. Is this still for me?</div>
+      <div class="faq-a">Yes. While many of my recent clients are in the wellness space, my methodology is industry-agnostic. It's been used by start up founders in fintech, nonprofits, coaches and consultants, agency owners, and thought leaders alike. If your business depends on people trusting you, this applies to you.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">How is this different from other business books?</div>
+      <div class="faq-a">
+        <p>Most marketing and even story brand books are 100+ pages of strategies &amp; tactics: content types, hooks, funnels...</p>
+        <p>One infamous story branding book begins by suggesting you shouldn't share your story on your website, just a clear message to your customer... The problem there is, how are you supposed to even know what your most aligned customer journey is if you haven't first examined your story, attempting to seek outside yourself for a gap in the market you may not even be aligned with?</p>
+        <p>How are you supposed to become seen and understood in your unique value if you do not share your story?</p>
+        <p>This book takes a completely unique approach by putting YOU and your story first in order to extract what is within you that is most authentically yours, and help you see that the more you see and understand your own unique value, your most destined and aligned clients will become obvious.</p>
+        <p>It is designed to exemplify the concise storytelling it teaches, and to read in a single sitting, under an hour, and hands you five simple, results-proven frameworks with case studies for each.</p>
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is there anything else I need to buy to make this work?</div>
+      <div class="faq-a">No. The book stands on its own. The framework, the prompts, and the examples are all inside it. However, on the next page I will include additional tools and resources, like my custom AI Storytelling Messenger GPT, which will help you alchemize your story into clear, concise brand storytelling frameworks &amp; messaging statements, without replacing your voice or authenticity.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ FINAL CTA ═══════════════════════ -->
+<section class="section-navy final-cta">
+  <div class="wrap">
+    <div class="eyebrow" style="justify-content:center;">Ready When You Are</div>
+    <h2>Stop performing. Become <em>a lighthouse</em>.</h2>
+    <p class="lede">Let your story driven message ignite your mission into a movement.</p>
+    <div style="margin-top: 2rem;">
+      <a href="#order" class="btn-primary">Get Instant Access: $5 →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2026 Brand Story, Evan Galeano. All rights reserved.
+</footer>
+
+</body>
+</html>

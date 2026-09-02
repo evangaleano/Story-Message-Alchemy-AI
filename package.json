@@ -1,0 +1,23 @@
+{
+  "name": "story-message-alchemy-ai-portal",
+  "version": "1.0.0",
+  "description": "Story Message Alchemy AI Portal - Interactive AI-powered storytelling platform",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.123.0",
+    "@supabase/supabase-js": "^2.38.0",
+    "next": "^14.2.35",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.54.0",
+    "eslint-config-next": "^14.0.0"
+  }
+}

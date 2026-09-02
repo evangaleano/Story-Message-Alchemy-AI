@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Member Login | Brand Story</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     PORTAL LOGIN — email + 4-digit PIN, two-step flow.
+     Same navy/cream/gold + Montserrat/Poppins system as the rest
+     of the "Unlock the Power of Your Story" funnel.
+
+     ── DEMO DATA NOTE (read before wiring this to real buyers) ──
+     There is no backend yet. Buyer records + PINs currently live in
+     the browser's localStorage (see the BUYERS block below) purely
+     so this flow is clickable end to end for design review.
+     Before launch, replace the localStorage buyer lookup with a
+     real API call to a backend that has the actual purchase list
+     (synced from GHL contacts/tags or Stripe via webhook), and move
+     PIN storage server-side (hashed). Search this file for "DEMO"
+     to find every spot that needs to change.
+     ============================================================ */
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1a1a;
+    --ink-soft: #333333;
+    --ink-muted: #6b6b6b;
+    --cream: #f8f6f1;
+    --cream-warm: #ebe8e0;
+    --cream-deep: #ded8cd;
+    --gold: #d9bc72;
+    --gold-light: #f0dda3;
+    --gold-muted: #b5924a;
+
+    --charcoal: #1a1a1a;
+    --charcoal-light: #2d2d2d;
+
+    --serif: 'Instrument Serif', Georgia, serif;
+    --headline: 'Montserrat', system-ui, sans-serif;
+    --sans: 'Poppins', system-ui, sans-serif;
+    --mono: 'Poppins', system-ui, sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--charcoal);
+    color: var(--cream);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  img { max-width: 100%; display: block; }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    min-height: 100vh;
+  }
+
+  /* ─── LEFT: BRAND / PROOF PANEL ─── */
+  .brand-panel {
+    position: relative;
+    overflow: hidden;
+    padding: 3rem;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    background:
+      radial-gradient(ellipse 70% 50% at 78% 20%, rgba(212,188,122,0.14) 0%, transparent 60%),
+      linear-gradient(170deg, var(--charcoal) 0%, var(--charcoal-light) 100%);
+  }
+  .beam {
+    position: absolute; top: -10%; right: 6%; width: 46vw; height: 130%;
+    background: conic-gradient(from -18deg at 20% 15%, rgba(212,188,122,0.16), transparent 22%);
+    pointer-events: none; z-index: 1;
+  }
+
+  .brand-logo {
+    position: relative; z-index: 2;
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    margin-bottom: 2.4rem;
+  }
+  .brand-logo svg { width: 30px; height: 30px; color: var(--gold-light); }
+  .brand-logo span {
+    font-family: var(--headline); font-weight: 700; font-size: 1.1rem; letter-spacing: 0.01em;
+  }
+
+  .brand-panel h1 {
+    position: relative; z-index: 2;
+    font-family: var(--headline); font-weight: 700; line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+    max-width: 620px; margin-bottom: 1rem;
+  }
+  .brand-panel h1 em { font-style: normal; color: var(--gold-light); }
+
+  .brand-panel .sub {
+    position: relative; z-index: 2;
+    font-size: 1.02rem; font-weight: 300; color: rgba(248,246,241,0.78);
+    max-width: 480px; margin-bottom: 3rem;
+  }
+
+  .proof-row {
+    position: relative; z-index: 2;
+    display: flex; gap: 2.6rem; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 3rem;
+  }
+  .proof-stat { text-align: center; }
+  .proof-stat .num { font-family: var(--headline); font-weight: 800; font-size: 1.5rem; color: var(--gold-light); }
+  .proof-stat .label { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; color: rgba(248,246,241,0.56); margin-top: 0.3rem; }
+
+  .quote-card {
+    position: relative; z-index: 2;
+    max-width: 480px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px; padding: 1.6rem 1.8rem;
+    text-align: left;
+  }
+  .quote-card p {
+    font-family: var(--serif); font-style: italic; font-size: 1.05rem; line-height: 1.6;
+    color: rgba(248,246,241,0.92); margin-bottom: 0.8rem;
+  }
+  .quote-card .attr { font-family: var(--mono); font-weight: 600; font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; color: rgba(248,246,241,0.5); }
+
+  @media (max-width: 900px) {
+    .shell { grid-template-columns: 1fr; }
+    .brand-panel { display: none; }
+  }
+
+  /* ─── RIGHT: AUTH PANEL ─── */
+  .auth-panel {
+    position: relative;
+    background: var(--cream);
+    color: var(--ink);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 3rem 2.4rem;
+  }
+
+  .get-book-pill {
+    position: absolute; top: 1.6rem; right: 1.8rem;
+    display: inline-flex; flex-direction: column; align-items: flex-end; gap: 0.15rem;
+    border: 1px solid var(--cream-deep); border-radius: 999px;
+    padding: 0.55rem 1.2rem;
+    font-size: 0.78rem; color: var(--ink-muted);
+    text-decoration: none; text-align: right; line-height: 1.3;
+  }
+  .get-book-pill strong { color: var(--gold-muted); font-weight: 700; }
+
+  .auth-card { width: 100%; max-width: 360px; }
+
+  .step-indicator {
+    font-family: var(--mono); font-weight: 600; font-size: 0.7rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-muted); margin-bottom: 0.6rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .step-indicator .bar { flex: 1; height: 2px; background: var(--cream-deep); position: relative; overflow: hidden; border-radius: 2px; }
+  .step-indicator .bar::after {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    background: var(--gold); width: 50%; transition: width 0.25s;
+  }
+  .step-indicator.step-2 .bar::after { width: 100%; }
+
+  .go-back {
+    display: none; align-items: center; gap: 0.4rem;
+    font-family: var(--mono); font-size: 0.76rem; color: var(--ink-muted);
+    text-decoration: none; margin-bottom: 1.2rem; cursor: pointer; background: none; border: none; padding: 0;
+  }
+  .go-back svg { width: 14px; height: 14px; }
+
+  .auth-card h2 {
+    font-family: var(--headline); font-weight: 700; font-size: 1.7rem;
+    letter-spacing: -0.01em; margin-bottom: 0.5rem;
+  }
+  .auth-card .auth-sub { color: var(--ink-muted); font-size: 0.96rem; margin-bottom: 2rem; }
+
+  label {
+    display: block; font-family: var(--mono); font-weight: 600; font-size: 0.72rem;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 0.5rem;
+  }
+
+  input[type="email"] {
+    width: 100%; padding: 0.85rem 1rem; border-radius: 4px;
+    border: 1px solid var(--cream-deep); background: #fff; color: var(--ink);
+    font-family: var(--sans); font-size: 0.98rem; margin-bottom: 1.4rem;
+  }
+  input[type="email"]:focus { outline: none; border-color: var(--gold); }
+
+  .pin-row { display: flex; gap: 0.7rem; margin-bottom: 0.5rem; }
+  .pin-row input {
+    width: 100%; aspect-ratio: 1; text-align: center;
+    font-family: var(--headline); font-size: 1.4rem; font-weight: 700;
+    border-radius: 6px; border: 1.5px solid var(--cream-deep);
+    background: #fff; color: var(--ink);
+  }
+  .pin-row input:focus { outline: none; border-color: var(--gold); }
+
+  .field-error {
+    display: none; font-size: 0.85rem; color: #b3492f;
+    margin: -0.6rem 0 1.2rem;
+  }
+  .field-error.show { display: block; }
+  .field-note {
+    font-size: 0.85rem; color: var(--ink-muted); margin: 0.8rem 0 0;
+  }
+
+  .btn-primary {
+    width: 100%; background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%); color: var(--charcoal);
+    padding: 0.95rem; border-radius: 4px; border: none; cursor: pointer;
+    font-family: var(--sans); font-size: 0.92rem; font-weight: 700;
+    letter-spacing: 0.03em;
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+    transition: filter 0.2s;
+    margin-top: 0.6rem;
+  }
+  .btn-primary:hover { filter: brightness(1.06); }
+  .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  .auth-footer {
+    text-align: center; margin-top: 1.6rem; font-size: 0.88rem; color: var(--ink-muted);
+  }
+  .auth-footer a, .link-btn {
+    color: var(--gold-muted); font-weight: 600; text-decoration: none;
+    background: none; border: none; cursor: pointer; font-family: inherit; font-size: inherit; padding: 0;
+  }
+
+  .step { display: none; }
+  .step.active { display: block; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ═══════════════ LEFT: BRAND / PROOF ═══════════════ -->
+  <div class="brand-panel">
+    <div class="beam" aria-hidden="true"></div>
+
+    <div class="brand-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 6c-1.8-1.4-4.3-2-7-2v13c2.7 0 5.2 0.6 7 2 1.8-1.4 4.3-2 7-2V4c-2.7 0-5.2 0.6-7 2z"/><path d="M12 6v13"/></svg>
+      <span>Brand Story</span>
+    </div>
+
+    <h1>Welcome back to <em>Unlock the Power of Your Story</em></h1>
+    <p class="sub">Your book, your bonus resources, and your story-driven ChatGPT agents — all in one place.</p>
+
+    <div class="proof-row">
+      <div class="proof-stat"><div class="num">$30K → $285K</div><div class="label">Retreat revenue, 6 months</div></div>
+      <div class="proof-stat"><div class="num">0 → 75K+</div><div class="label">Followers, organic + ads</div></div>
+      <div class="proof-stat"><div class="num">5 → 25</div><div class="label">New patients in 30 days</div></div>
+    </div>
+
+    <div class="quote-card">
+      <p>"Clarity came from doing my 2019 website brand story video with the insightful, master communicator and LA filmmaker Evan Galeano."</p>
+      <div class="attr">— Dr. Andrea Renee Rivera</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ RIGHT: AUTH ═══════════════ -->
+  <div class="auth-panel">
+
+    <a href="power-of-your-story-landing.html" class="get-book-pill">
+      <span>Haven't grabbed the book yet?</span>
+      <strong>Get it here →</strong>
+    </a>
+
+    <div class="auth-card">
+
+      <!-- STEP 1: EMAIL -->
+      <div class="step active" id="step-email">
+        <div class="step-indicator"><span>Step 1</span><div class="bar"></div></div>
+        <h2>Welcome.</h2>
+        <p class="auth-sub">Enter the email you used to buy the book to access the portal.</p>
+
+        <label for="email-input">Email</label>
+        <input type="email" id="email-input" placeholder="you@example.com" autocomplete="email">
+        <div class="field-error" id="email-error">We couldn't find a purchase under that email. Double-check it, or reach out at <a href="mailto:support@brand-story.agency" style="color:#b3492f;">support@brand-story.agency</a>.</div>
+
+        <button class="btn-primary" id="email-continue">Continue →</button>
+
+        <div class="auth-footer">New here? <a href="power-of-your-story-landing.html">Get the book to create your account →</a></div>
+      </div>
+
+      <!-- STEP 2: PIN (returning buyer) -->
+      <div class="step" id="step-pin">
+        <div class="step-indicator step-2"><span>Step 2</span><div class="bar"></div></div>
+        <button class="go-back" id="pin-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Go back</button>
+        <h2>Welcome back.</h2>
+        <p class="auth-sub">Enter your 4-digit PIN to sign in.</p>
+
+        <div class="pin-row">
+          <input type="text" inputmode="numeric" maxlength="1" class="pin-digit" data-step="pin">
+          <input type="text" inputmode="numeric" maxlength="1" class="pin-digit" data-step="pin">
+          <input type="text" inputmode="numeric" maxlength="1" class="pin-digit" data-step="pin">
+          <input type="text" inputmode="numeric" maxlength="1" class="pin-digit" data-step="pin">
+        </div>
+        <div class="field-error" id="pin-error">That PIN doesn't match. Try again, or reset it below.</div>
+
+        <div class="auth-footer"><button class="link-btn" id="forgot-pin">Forgot your PIN?</button></div>
+      </div>
+
+      <!-- STEP 3: CREATE PIN (first-time buyer) -->
+      <div class="step" id="step-create">
+        <div class="step-indicator step-2"><span>Step 2</span><div class="bar"></div></div>
+        <button class="go-back" id="create-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Go back</button>
+        <h2>Create your PIN.</h2>
+        <p class="auth-sub">First time here — set a 4-digit PIN to secure your portal. You'll use this to log in from now on.</p>
+
+        <div class="pin-row">
+          <input type="text" inputmode="numeric" maxlength="1" class="pin-digit" data-step="create">
+          <input type="text" inputmode="numeric" maxlength="1" class="pin-digit" data-step="create">
+          <input type="text" inputmode="numeric" maxlength="1" class="pin-digit" data-step="create">
+          <input type="text" inputmode="numeric" maxlength="1" class="pin-digit" data-step="create">
+        </div>
+        <p class="field-note" id="create-hint">Choose 4 digits.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ============================================================
+     DEMO auth layer — localStorage only. See file-header note.
+     ============================================================ */
+
+  const BUYERS_KEY = 'bs_portal_buyers';
+  const SESSION_KEY = 'bs_portal_session';
+
+  // DEMO: seed a couple of buyer records so this is clickable.
+  // Replace this whole block with a real lookup against your buyer
+  // database (synced from GHL/Stripe) before launch.
+  function seedDemoBuyers() {
+    if (localStorage.getItem(BUYERS_KEY)) return;
+    const demoBuyers = [
+      {
+        email: 'demo@brandstory.test',
+        pin: null, // no PIN yet -> triggers "create your account"
+        purchases: { book: true, gptMessage: true, gptAvatar: true, gptOffer: false, masterclass: true }
+      },
+      {
+        email: 'returning@brandstory.test',
+        pin: '1234', // already has a PIN -> triggers normal PIN login
+        purchases: { book: true, gptMessage: true, gptAvatar: false, gptOffer: false, masterclass: false }
+      }
+    ];
+    localStorage.setItem(BUYERS_KEY, JSON.stringify(demoBuyers));
+  }
+  seedDemoBuyers();
+
+  function getBuyers() {
+    return JSON.parse(localStorage.getItem(BUYERS_KEY) || '[]');
+  }
+  function saveBuyers(buyers) {
+    localStorage.setItem(BUYERS_KEY, JSON.stringify(buyers));
+  }
+  function findBuyer(email) {
+    return getBuyers().find(b => b.email.toLowerCase() === email.toLowerCase());
+  }
+
+  const steps = {
+    email: document.getElementById('step-email'),
+    pin: document.getElementById('step-pin'),
+    create: document.getElementById('step-create')
+  };
+  function showStep(name) {
+    Object.values(steps).forEach(s => s.classList.remove('active'));
+    steps[name].classList.add('active');
+  }
+
+  let currentBuyer = null;
+
+  // ── STEP 1: EMAIL ──
+  const emailInput = document.getElementById('email-input');
+  const emailError = document.getElementById('email-error');
+
+  document.getElementById('email-continue').addEventListener('click', () => {
+    const email = emailInput.value.trim();
+    emailError.classList.remove('show');
+
+    if (!email || !email.includes('@')) {
+      emailError.textContent = 'Enter a valid email address.';
+      emailError.classList.add('show');
+      return;
+    }
+
+    const buyer = findBuyer(email);
+    if (!buyer) {
+      emailError.innerHTML = 'We couldn\'t find a purchase under that email. Double-check it, or reach out at <a href="mailto:support@brand-story.agency" style="color:#b3492f;">support@brand-story.agency</a>.';
+      emailError.classList.add('show');
+      return;
+    }
+
+    currentBuyer = buyer;
+    if (buyer.pin) {
+      showStep('pin');
+      focusFirstPinDigit('pin');
+    } else {
+      showStep('create');
+      focusFirstPinDigit('create');
+    }
+  });
+  emailInput.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('email-continue').click(); });
+
+  document.getElementById('pin-back').addEventListener('click', () => showStep('email'));
+  document.getElementById('create-back').addEventListener('click', () => showStep('email'));
+
+  // ── PIN DIGIT BOXES (auto-advance) ──
+  function focusFirstPinDigit(step) {
+    const first = document.querySelector(`.pin-digit[data-step="${step}"]`);
+    if (first) setTimeout(() => first.focus(), 50);
+  }
+
+  document.querySelectorAll('.pin-digit').forEach(input => {
+    input.addEventListener('input', () => {
+      input.value = input.value.replace(/[^0-9]/g, '').slice(0, 1);
+      if (input.value) {
+        const next = input.nextElementSibling;
+        if (next && next.classList.contains('pin-digit')) next.focus();
+        else checkPinComplete(input.dataset.step);
+      }
+    });
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !input.value) {
+        const prev = input.previousElementSibling;
+        if (prev && prev.classList.contains('pin-digit')) prev.focus();
+      }
+    });
+  });
+
+  function getPinValue(step) {
+    return Array.from(document.querySelectorAll(`.pin-digit[data-step="${step}"]`)).map(i => i.value).join('');
+  }
+  function clearPin(step) {
+    document.querySelectorAll(`.pin-digit[data-step="${step}"]`).forEach(i => i.value = '');
+  }
+
+  function checkPinComplete(step) {
+    const value = getPinValue(step);
+    if (value.length < 4) return;
+
+    if (step === 'pin') {
+      const error = document.getElementById('pin-error');
+      if (value === currentBuyer.pin) {
+        logIn(currentBuyer.email);
+      } else {
+        error.classList.add('show');
+        clearPin('pin');
+        focusFirstPinDigit('pin');
+      }
+    }
+
+    if (step === 'create') {
+      const buyers = getBuyers();
+      const buyer = buyers.find(b => b.email.toLowerCase() === currentBuyer.email.toLowerCase());
+      buyer.pin = value;
+      saveBuyers(buyers);
+      logIn(buyer.email);
+    }
+  }
+
+  document.getElementById('forgot-pin').addEventListener('click', () => {
+    window.location.href = 'mailto:support@brand-story.agency?subject=Portal%20PIN%20reset';
+  });
+
+  function logIn(email) {
+    localStorage.setItem(SESSION_KEY, email);
+    window.location.href = 'portal-dashboard.html';
+  }
+
+  // If already logged in, skip straight to dashboard.
+  if (localStorage.getItem(SESSION_KEY)) {
+    window.location.href = 'portal-dashboard.html';
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sips -g pixelWidth -g pixelHeight \"Power Story Book Cover V1.png\")",
+      "mcp__d3a2ff71-04b6-43ce-9199-e272b90e4c26__search-designs",
+      "mcp__bd30ba9c-c6ac-4087-b4ef-087eadfe1e31__notion-fetch",
+      "mcp__bd30ba9c-c6ac-4087-b4ef-087eadfe1e31__notion-create-pages",
+      "Bash(python3 -m http.server 8000)",
+      "Bash(python3 -c \"import PIL; print\\('PIL available', PIL.__version__\\)\")",
+      "Bash(python3)",
+      "WebSearch",
+      "Bash(lsof -i :8000 -sTCP:LISTEN)",
+      "Bash(kill 66713)",
+      "Bash(python3 -m http.server 8000 --directory \"/Users/evan/Desktop/Claude Code/Unlock the Power of Your Story Book + Mini Course Funnel\")",
+      "Read(//Users/evan/Desktop/Claude Code/Brand Story Vercel Website/**)",
+      "Bash(mkdir -p \"/Users/evan/Desktop/Claude Code/Brand Story Vercel Website/src/views/manifesto-intensive\" \"/Users/evan/Desktop/Claude Code/Brand Story Vercel Website/src/app/\\(site\\)/manifesto-intensive/success\" \"/Users/evan/Desktop/Claude Code/Brand Story Vercel Website/src/app/api/manifesto-intensive-checkout\")",
+      "Bash(ps -p 58428 -o pid,ppid,etime,command)",
+      "Bash(lsof -i :3000 -sTCP:LISTEN)",
+      "Bash(/bin/zsh -lc 'export PATH=/opt/homebrew/bin:$PATH && exec pnpm exec next dev --port 3000')"
+    ]
+  }
+}
