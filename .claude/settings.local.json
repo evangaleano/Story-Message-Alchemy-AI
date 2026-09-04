@@ -16,7 +16,13 @@
       "Bash(mkdir -p \"/Users/evan/Desktop/Claude Code/Brand Story Vercel Website/src/views/manifesto-intensive\" \"/Users/evan/Desktop/Claude Code/Brand Story Vercel Website/src/app/\\(site\\)/manifesto-intensive/success\" \"/Users/evan/Desktop/Claude Code/Brand Story Vercel Website/src/app/api/manifesto-intensive-checkout\")",
       "Bash(ps -p 58428 -o pid,ppid,etime,command)",
       "Bash(lsof -i :3000 -sTCP:LISTEN)",
-      "Bash(/bin/zsh -lc 'export PATH=/opt/homebrew/bin:$PATH && exec pnpm exec next dev --port 3000')"
+      "Bash(/bin/zsh -lc 'export PATH=/opt/homebrew/bin:$PATH && exec pnpm exec next dev --port 3000')",
+      "mcp__c6565005-9190-408b-b78b-f49ff49ef2cd__get_git_deployment_context",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Skill(claude-api)",
+      "Skill(claude-api:*)"
     ]
   }
 }
