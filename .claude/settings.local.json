@@ -22,7 +22,22 @@
       "Bash(git commit *)",
       "Bash(git push *)",
       "Skill(claude-api)",
-      "Skill(claude-api:*)"
+      "Skill(claude-api:*)",
+      "Bash(chmod +x \"/Users/evan/Desktop/Claude Code/Unlock the Power of Your Story Book + Mini Course Funnel/.claude/static_server.py\")",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(cat > *)",
+      "Bash(curl -s http://localhost:3000/power-of-your-story-landing.html)",
+      "Bash(npm list *)",
+      "Bash(npm install *)",
+      "Bash(SUPABASE_URL=\"https://dummy-local-verify.supabase.co\" SUPABASE_SERVICE_KEY=\"dummy-service-key-local-verify-only\" ANTHROPIC_API_KEY=\"sk-ant-dummy-local-verify-only\" NEXT_PUBLIC_SUPABASE_URL=\"https://dummy-local-verify.supabase.co\" NEXT_PUBLIC_SUPABASE_ANON_KEY=\"dummy-anon-key-local-verify-only\" npm run build)",
+      "Bash(SUPABASE_URL=\"https://dummy-local-verify.supabase.co\" SUPABASE_SERVICE_KEY=\"dummy-service-key-local-verify-only\" ANTHROPIC_API_KEY=\"sk-ant-dummy-local-verify-only\" NEXT_PUBLIC_SUPABASE_URL=\"https://dummy-local-verify.supabase.co\" NEXT_PUBLIC_SUPABASE_ANON_KEY=\"dummy-anon-key-local-verify-only\" npm run start -- -p 3999)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3999/)",
+      "Bash(curl -s -D - -o /dev/null http://localhost:3999/)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:3999/power-of-your-story-landing.html)",
+      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\\\\n\" http://localhost:3999/api/ai/message)",
+      "Bash(xargs kill)",
+      "Bash(lsof -i :3999 -sTCP:LISTEN)",
+      "Bash(git status *)"
     ]
   }
 }

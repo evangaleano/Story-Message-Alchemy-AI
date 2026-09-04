@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "static-preview",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["/Users/evan/Desktop/Claude Code/Unlock the Power of Your Story Book + Mini Course Funnel/.claude/static_server.py"],
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["/tmp/node_server.js"],
       "autoPort": true
     }
   ]
