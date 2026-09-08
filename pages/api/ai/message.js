@@ -93,12 +93,32 @@ export default async function handler(req, res) {
       return res.status(403).json({ error: 'Product not purchased' });
     }
 
-    // 4. Load project
+    // 4. Load or create project
     let project;
     try {
       project = await getProject(project_id);
     } catch (e) {
-      return res.status(404).json({ error: 'Project not found' });
+      // Project doesn't exist, create it
+      try {
+        const { data, error } = await supabase
+          .from('projects')
+          .insert([{
+            id: project_id,
+            user_id: user_id,
+            product_id: product_id,
+            current_stage: 1,
+            state: {},
+            conversation: [],
+            completed: false,
+          }])
+          .select()
+          .single();
+
+        if (error) throw error;
+        project = data;
+      } catch (createError) {
+        return res.status(500).json({ error: 'Failed to create project' });
+      }
     }
 
     // 5. Verify user owns project
