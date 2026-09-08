@@ -40,7 +40,9 @@
       "Bash(git status *)",
       "Bash(python3 -m http.server 8888)",
       "Bash(pkill -f \"python3 -m http.server\")",
-      "Bash(python3 -m http.server 8889)"
+      "Bash(python3 -m http.server 8889)",
+      "Bash(vercel --prod --confirm)",
+      "Bash(vercel logs *)"
     ]
   }
 }

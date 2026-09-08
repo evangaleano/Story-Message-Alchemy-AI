@@ -21,6 +21,7 @@
  */
 
 import {
+  supabase,
   getUser,
   getProject,
   updateProject,
@@ -72,10 +73,17 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid product_id (must be 1, 2, or 3)' });
     }
 
-    // 2. Verify user exists
+    // 2. Verify user exists (user_id is actually email from frontend)
     let user;
     try {
-      user = await getUser(user_id);
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', user_id)
+        .single();
+
+      if (error) throw error;
+      user = data;
     } catch (e) {
       return res.status(401).json({ error: 'User not found' });
     }
