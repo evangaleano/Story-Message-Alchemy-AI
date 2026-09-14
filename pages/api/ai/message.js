@@ -144,6 +144,8 @@ export default async function handler(req, res) {
       user_id: user.id,
       project_product_id: project.product_id,
       request_product_id: product_id,
+      user_id_type: typeof user.id,
+      product_id_type: typeof product_id,
     });
     if (project.user_id !== user.id || project.product_id !== product_id) {
       console.error('Authorization failed:', {
@@ -151,8 +153,18 @@ export default async function handler(req, res) {
         user_id: user.id,
         project_product_id: project.product_id,
         request_product_id: product_id,
+        check1: project.user_id !== user.id,
+        check2: project.product_id !== product_id,
       });
-      return res.status(403).json({ error: 'Unauthorized: project mismatch' });
+      return res.status(403).json({
+        error: 'Unauthorized: project mismatch',
+        details: {
+          project_user_id: project.user_id,
+          user_id: user.id,
+          project_product_id: project.product_id,
+          request_product_id: product_id,
+        }
+      });
     }
 
     // 6. Build system prompt (optimized, not full 2000-line doc)
