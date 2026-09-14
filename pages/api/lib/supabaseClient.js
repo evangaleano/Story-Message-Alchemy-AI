@@ -61,6 +61,20 @@ export async function getOrCreateUser(email) {
     throw new Error(`Database error: ${error.message}`);
   }
 
+  // If user exists but doesn't have an id, generate one and update
+  if (user && !user.id) {
+    const userId = randomUUID();
+    const { data: updatedUser, error: updateError } = await supabase
+      .from('users')
+      .update({ id: userId })
+      .eq('email', email)
+      .select()
+      .single();
+
+    if (updateError) throw new Error(`Failed to update user: ${updateError.message}`);
+    return updatedUser;
+  }
+
   return user;
 }
 
