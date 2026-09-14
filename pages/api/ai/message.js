@@ -98,6 +98,7 @@ export default async function handler(req, res) {
     try {
       project = await getProject(project_id);
     } catch (e) {
+      console.log('Project not found, attempting to create:', e.message);
       // Project doesn't exist, create it
       try {
         const { data, error } = await supabase
@@ -117,7 +118,8 @@ export default async function handler(req, res) {
         if (error) throw error;
         project = data;
       } catch (createError) {
-        return res.status(500).json({ error: 'Failed to create project' });
+        console.error('Project creation error:', createError);
+        return res.status(500).json({ error: 'Failed to create project', details: createError.message });
       }
     }
 
