@@ -107,6 +107,7 @@ export default async function handler(req, res) {
             id: project_id,
             user_id: user.id,
             product_id: product_id,
+            project_name: `Project ${new Date().toLocaleDateString()}`,
             current_stage: 1,
             state: {},
             conversation: [],
