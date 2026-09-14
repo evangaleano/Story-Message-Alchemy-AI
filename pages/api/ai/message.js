@@ -137,7 +137,7 @@ export default async function handler(req, res) {
     }
 
     // 5. Verify user owns project
-    if (project.user_id !== user_id || project.product_id !== product_id) {
+    if (project.user_id !== user.id || project.product_id !== product_id) {
       return res.status(403).json({ error: 'Unauthorized: project mismatch' });
     }
 
