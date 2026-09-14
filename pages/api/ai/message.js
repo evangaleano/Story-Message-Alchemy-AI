@@ -137,7 +137,19 @@ export default async function handler(req, res) {
     }
 
     // 5. Verify user owns project
+    console.log('Verification check:', {
+      project_user_id: project.user_id,
+      user_id: user.id,
+      project_product_id: project.product_id,
+      request_product_id: product_id,
+    });
     if (project.user_id !== user.id || project.product_id !== product_id) {
+      console.error('Authorization failed:', {
+        project_user_id: project.user_id,
+        user_id: user.id,
+        project_product_id: project.product_id,
+        request_product_id: product_id,
+      });
       return res.status(403).json({ error: 'Unauthorized: project mismatch' });
     }
 
