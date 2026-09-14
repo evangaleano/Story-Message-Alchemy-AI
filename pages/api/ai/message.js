@@ -113,7 +113,7 @@ export default async function handler(req, res) {
       console.log('Project not found, attempting to create:', e.message);
       // Project doesn't exist, create it
       try {
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from('projects')
           .insert([{
             id: project_id,
@@ -124,12 +124,20 @@ export default async function handler(req, res) {
             state: {},
             conversation: [],
             completed: false,
-          }])
-          .select()
-          .single();
+          }]);
 
         if (error) throw error;
-        project = data;
+        // Construct project object from insert data
+        project = {
+          id: project_id,
+          user_id: user.id,
+          product_id: product_id,
+          project_name: `Project ${new Date().toLocaleDateString()}`,
+          current_stage: 1,
+          state: {},
+          conversation: [],
+          completed: false,
+        };
       } catch (createError) {
         console.error('Project creation error:', createError);
         return res.status(500).json({ error: 'Failed to create project', details: createError.message });
