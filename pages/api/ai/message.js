@@ -104,7 +104,7 @@ export default async function handler(req, res) {
           .from('projects')
           .insert([{
             id: project_id,
-            user_id: user_id,
+            user_id: user.id,
             product_id: product_id,
             current_stage: 1,
             state: {},
