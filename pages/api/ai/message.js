@@ -29,6 +29,7 @@ import {
   logUsage,
 } from '../lib/supabaseClient.js';
 import { canAccessProduct, getProductInfo } from '../lib/entitlements.js';
+import { randomUUID } from 'crypto';
 
 async function callAnthropicAPI(messages, systemPrompt) {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -54,6 +55,11 @@ async function callAnthropicAPI(messages, systemPrompt) {
   return await response.json();
 }
 
+const isValidUUID = (uuid) => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
+};
+
 export default async function handler(req, res) {
 
   // Only POST allowed
@@ -62,11 +68,17 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { user_id, project_id, product_id, user_message } = req.body;
+    let { user_id, project_id, product_id, user_message } = req.body;
 
     // 1. Validate input
     if (!user_id || !project_id || !product_id || !user_message) {
       return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // Generate a proper UUID if project_id is invalid (fix for frontend caching issue)
+    if (!isValidUUID(project_id)) {
+      console.log(`Invalid project_id format received: ${project_id}, generating new UUID`);
+      project_id = randomUUID();
     }
 
     if (![1, 2, 3].includes(product_id)) {
