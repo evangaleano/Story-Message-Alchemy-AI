@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { randomUUID } from 'crypto';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
@@ -37,9 +38,11 @@ export async function getOrCreateUser(email) {
 
   if (error && error.code === 'PGRST116') {
     // User doesn't exist, create them
+    const userId = randomUUID();
     const { data: newUser, error: createError } = await supabase
       .from('users')
       .insert([{
+        id: userId,
         email,
         purchases: {
           book: true, // Assume they have the book
