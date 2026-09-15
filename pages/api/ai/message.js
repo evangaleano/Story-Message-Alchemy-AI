@@ -4,7 +4,7 @@
  *
  * Request body:
  * {
- *   user_id: string (UUID),
+ *   user_id: string (email, resolved to UUID internally),
  *   project_id: string (UUID),
  *   product_id: 1 | 2 | 3,
  *   user_message: string,
@@ -12,6 +12,7 @@
  *
  * Response:
  * {
+ *   success: boolean,
  *   agent_response: string,
  *   current_stage: number,
  *   state: object,
@@ -96,15 +97,12 @@ export default async function handler(req, res) {
     // 2. Verify user exists or create if needed (user_id is actually email from frontend)
     let user;
     try {
-      console.log(`[API] Calling getOrCreateUser for: ${user_id}`);
       user = await getOrCreateUser(user_id);
-      console.log(`[API] getOrCreateUser returned user with id: ${user?.id}`);
     } catch (e) {
-      console.error(`[API] getOrCreateUser failed:`, e.message);
+      console.error(`[API] USER_LOOKUP_FAILED for ${user_id}:`, e.message);
       return res.status(401).json({
-        error: 'User lookup/creation failed',
-        details: e.message,
-        user_email: user_id
+        error: 'USER_LOOKUP_FAILED',
+        message: 'Could not resolve user account'
       });
     }
 
@@ -118,12 +116,24 @@ export default async function handler(req, res) {
     try {
       project = await getProject(project_id);
     } catch (e) {
-      console.log('Project not found, attempting to create:', e.message);
-      // Project doesn't exist, create it
-      try {
-        const { error } = await supabase
-          .from('projects')
-          .insert([{
+      // Only create if the record genuinely doesn't exist (not for other database errors)
+      if (e.message && e.message.includes('not found')) {
+        try {
+          const { error } = await supabase
+            .from('projects')
+            .insert([{
+              id: project_id,
+              user_id: user.id,
+              product_id: product_id,
+              project_name: `Project ${new Date().toLocaleDateString()}`,
+              current_stage: 1,
+              state: {},
+              conversation: [],
+              completed: false,
+            }]);
+
+          if (error) throw error;
+          project = {
             id: project_id,
             user_id: user.id,
             product_id: product_id,
@@ -132,52 +142,34 @@ export default async function handler(req, res) {
             state: {},
             conversation: [],
             completed: false,
-          }]);
-
-        if (error) throw error;
-        // Construct project object from insert data
-        project = {
-          id: project_id,
-          user_id: user.id,
-          product_id: product_id,
-          project_name: `Project ${new Date().toLocaleDateString()}`,
-          current_stage: 1,
-          state: {},
-          conversation: [],
-          completed: false,
-        };
-      } catch (createError) {
-        console.error('Project creation error:', createError);
-        return res.status(500).json({ error: 'Failed to create project', details: createError.message });
+          };
+        } catch (createError) {
+          console.error(`[API] PROJECT_CREATE_FAILED for ${project_id}:`, createError.message);
+          return res.status(500).json({
+            error: 'PROJECT_CREATE_FAILED',
+            message: 'Could not create project'
+          });
+        }
+      } else {
+        console.error(`[API] Project lookup error for ${project_id}:`, e.message);
+        return res.status(500).json({
+          error: 'PROJECT_LOOKUP_FAILED',
+          message: 'Could not access project database'
+        });
       }
     }
 
     // 5. Verify user owns project
-    console.log('Verification check:', {
-      project_user_id: project.user_id,
-      user_id: user.id,
-      project_product_id: project.product_id,
-      request_product_id: product_id,
-      user_id_type: typeof user.id,
-      product_id_type: typeof product_id,
-    });
     if (project.user_id !== user.id || project.product_id !== product_id) {
-      console.error('Authorization failed:', {
+      console.error(`[API] PROJECT_MISMATCH for user ${user.id} on project ${project_id}:`, {
         project_user_id: project.user_id,
-        user_id: user.id,
+        request_user_id: user.id,
         project_product_id: project.product_id,
         request_product_id: product_id,
-        check1: project.user_id !== user.id,
-        check2: project.product_id !== product_id,
       });
       return res.status(403).json({
-        error: 'Unauthorized: project mismatch',
-        details: {
-          project_user_id: project.user_id,
-          user_id: user.id,
-          project_product_id: project.product_id,
-          request_product_id: product_id,
-        }
+        error: 'PROJECT_MISMATCH',
+        message: 'Access denied'
       });
     }
 
@@ -188,7 +180,16 @@ export default async function handler(req, res) {
     const messages = buildMessagesArray(project, user_message);
 
     // 8. Call Claude (Sonnet)
-    const message = await callAnthropicAPI(messages, systemPrompt);
+    let message;
+    try {
+      message = await callAnthropicAPI(messages, systemPrompt);
+    } catch (e) {
+      console.error(`[API] ANTHROPIC_REQUEST_FAILED for project ${project_id}:`, e.message);
+      return res.status(502).json({
+        error: 'ANTHROPIC_REQUEST_FAILED',
+        message: 'Failed to get response from AI service'
+      });
+    }
     const agent_response = message.content[0].text;
 
     // 9. Extract structured state updates from the agent response
@@ -211,8 +212,8 @@ export default async function handler(req, res) {
     await addMessageToConversation(project_id, 'user', user_message);
     await addMessageToConversation(project_id, 'assistant', agent_response);
 
-    // 11. Track usage
-    await logUsage(user_id, project_id, product_id, message.usage, is_complete ? 'completed' : 'in_progress');
+    // 11. Track usage (use user.id UUID, not the email)
+    await logUsage(user.id, project_id, product_id, message.usage, is_complete ? 'completed' : 'in_progress');
 
     // 12. Return response
     return res.status(200).json({
@@ -229,10 +230,10 @@ export default async function handler(req, res) {
       },
     });
   } catch (error) {
-    console.error('API error:', error);
+    console.error('[API] UNHANDLED_ERROR:', error);
     return res.status(500).json({
-      error: 'Internal server error',
-      message: error.message,
+      error: 'INTERNAL_ERROR',
+      message: 'An unexpected error occurred'
     });
   }
 }
