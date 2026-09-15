@@ -50,7 +50,8 @@
       "Bash(cp \"/Users/evan/Desktop/Claude Code/Unlock the Power of Your Story Book + Mini Course Funnel/public/power-of-your-story-thank-you.html\" \"/private/tmp/claude-501/-Users-evan-Desktop-Claude-Code-Unlock-the-Power-of-Your-Story-Book---Mini-Course-Funnel/scratchpad/archived-landing-pages/\")",
       "Bash(curl -s https://story-message-alchemy-ai.vercel.app/portal-dashboard.html)",
       "Bash(vercel --version)",
-      "Bash(curl -s -X POST https://story-message-alchemy-ai.vercel.app/api/ai/message -H 'Content-Type: application/json' -d '{ *)"
+      "Bash(curl -s -X POST https://story-message-alchemy-ai.vercel.app/api/ai/message -H 'Content-Type: application/json' -d '{ *)",
+      "Bash(curl -s -X POST https://story-message-alchemy-ai.vercel.app/api/ai/message -H \"Content-Type: application/json\" -d '{\"user_id\":\"test123@test.com\",\"project_id\":\"550e8400-e29b-41d4-a716-446655440000\",\"product_id\":1,\"user_message\":\"hi\"}')"
     ]
   }
 }

@@ -44,16 +44,20 @@ export async function getOrCreateUser(email) {
     .eq('email', email)
     .single();
 
+  console.log(`getOrCreateUser lookup for ${email}:`, { error: error?.code, has_user: !!user });
+
   if (error && error.code === 'PGRST116') {
     // User doesn't exist, create them
     const userId = generateUUID();
+    console.log(`Creating new user ${email} with id ${userId}`);
+
     const { data: newUser, error: createError } = await supabase
       .from('users')
       .insert([{
         id: userId,
         email,
         purchases: {
-          book: true, // Assume they have the book
+          book: true,
           product_1: false,
           product_2: false,
           product_3: false,
@@ -63,10 +67,11 @@ export async function getOrCreateUser(email) {
       .select()
       .single();
 
+    console.log(`User creation result:`, { createError: createError?.message, has_user: !!newUser });
     if (createError) throw new Error(`Failed to create user: ${createError.message}`);
     return newUser;
   } else if (error) {
-    throw new Error(`Database error: ${error.message}`);
+    throw new Error(`Database error: ${error.code} - ${error.message}`);
   }
 
   // If user exists but doesn't have an id, generate one and update
