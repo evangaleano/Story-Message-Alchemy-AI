@@ -1,11 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
-import { randomUUID } from 'crypto';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
 
 if (!supabaseUrl || !supabaseServiceKey) {
   throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_KEY environment variables');
+}
+
+// Generate a UUID v4 without requiring crypto module
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
 }
 
 // Service role client (server-side only, uses service key)
@@ -38,7 +46,7 @@ export async function getOrCreateUser(email) {
 
   if (error && error.code === 'PGRST116') {
     // User doesn't exist, create them
-    const userId = randomUUID();
+    const userId = generateUUID();
     const { data: newUser, error: createError } = await supabase
       .from('users')
       .insert([{
@@ -63,7 +71,7 @@ export async function getOrCreateUser(email) {
 
   // If user exists but doesn't have an id, generate one and update
   if (user && !user.id) {
-    const userId = randomUUID();
+    const userId = generateUUID();
     const { data: updatedUser, error: updateError } = await supabase
       .from('users')
       .update({ id: userId })
