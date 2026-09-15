@@ -12,15 +12,9 @@
      Same navy/cream/gold + Montserrat/Poppins system as the rest
      of the "Unlock the Power of Your Story" funnel.
 
-     ── DEMO DATA NOTE (read before wiring this to real buyers) ──
-     There is no backend yet. Buyer records + PINs currently live in
-     the browser's localStorage (see the BUYERS block below) purely
-     so this flow is clickable end to end for design review.
-     Before launch, replace the localStorage buyer lookup with a
-     real API call to a backend that has the actual purchase list
-     (synced from GHL contacts/tags or Stripe via webhook), and move
-     PIN storage server-side (hashed). Search this file for "DEMO"
-     to find every spot that needs to change.
+     Buyer records and hashed PINs are stored in Supabase and accessed
+     through a server-side API. The browser stores only the active
+     buyer's email and purchase entitlements for portal navigation.
      ============================================================ */
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -316,6 +310,7 @@
           <input type="text" inputmode="numeric" maxlength="1" class="pin-digit" data-step="create">
           <input type="text" inputmode="numeric" maxlength="1" class="pin-digit" data-step="create">
         </div>
+        <div class="field-error" id="create-error"></div>
         <p class="field-note" id="create-hint">Choose 4 digits.</p>
       </div>
 
@@ -325,41 +320,27 @@
 
 <script>
   /* ============================================================
-     DEMO auth layer — localStorage only. See file-header note.
+     Supabase-backed auth layer. PINs never enter localStorage.
      ============================================================ */
 
   const BUYERS_KEY = 'bs_portal_buyers';
   const SESSION_KEY = 'bs_portal_session';
 
-  // DEMO: seed a couple of buyer records so this is clickable.
-  // Replace this whole block with a real lookup against your buyer
-  // database (synced from GHL/Stripe) before launch.
-  function seedDemoBuyers() {
-    if (localStorage.getItem(BUYERS_KEY)) return;
-    const demoBuyers = [
-      {
-        email: 'demo@brandstory.test',
-        pin: null, // no PIN yet -> triggers "create your account"
-        purchases: { book: true, gptMessage: true, gptAvatar: true, gptOffer: false, masterclass: true }
-      },
-      {
-        email: 'returning@brandstory.test',
-        pin: '1234', // already has a PIN -> triggers normal PIN login
-        purchases: { book: true, gptMessage: true, gptAvatar: false, gptOffer: false, masterclass: false }
-      }
-    ];
-    localStorage.setItem(BUYERS_KEY, JSON.stringify(demoBuyers));
-  }
-  seedDemoBuyers();
+  async function authRequest(action, email, pin) {
+    const response = await fetch('/api/portal/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, email, ...(pin ? { pin } : {}) })
+    });
+    const data = await response.json();
 
-  function getBuyers() {
-    return JSON.parse(localStorage.getItem(BUYERS_KEY) || '[]');
-  }
-  function saveBuyers(buyers) {
-    localStorage.setItem(BUYERS_KEY, JSON.stringify(buyers));
-  }
-  function findBuyer(email) {
-    return getBuyers().find(b => b.email.toLowerCase() === email.toLowerCase());
+    if (!response.ok) {
+      const error = new Error(data.message || 'Unable to sign in right now.');
+      error.code = data.error;
+      throw error;
+    }
+
+    return data;
   }
 
   const steps = {
@@ -378,8 +359,9 @@
   const emailInput = document.getElementById('email-input');
   const emailError = document.getElementById('email-error');
 
-  document.getElementById('email-continue').addEventListener('click', () => {
-    const email = emailInput.value.trim();
+  const emailContinue = document.getElementById('email-continue');
+  emailContinue.addEventListener('click', async () => {
+    const email = emailInput.value.trim().toLowerCase();
     emailError.classList.remove('show');
 
     if (!email || !email.includes('@')) {
@@ -388,20 +370,31 @@
       return;
     }
 
-    const buyer = findBuyer(email);
-    if (!buyer) {
-      emailError.innerHTML = 'We couldn\'t find a purchase under that email. Double-check it, or reach out at <a href="mailto:support@brand-story.agency" style="color:#b3492f;">support@brand-story.agency</a>.';
-      emailError.classList.add('show');
-      return;
-    }
+    emailContinue.disabled = true;
+    emailContinue.textContent = 'Checking...';
 
-    currentBuyer = buyer;
-    if (buyer.pin) {
-      showStep('pin');
-      focusFirstPinDigit('pin');
-    } else {
-      showStep('create');
-      focusFirstPinDigit('create');
+    try {
+      const result = await authRequest('lookup', email);
+      if (!result.exists) {
+        emailError.innerHTML = 'We couldn\'t find a purchase under that email. Double-check it, or reach out at <a href="mailto:support@brand-story.agency" style="color:#b3492f;">support@brand-story.agency</a>.';
+        emailError.classList.add('show');
+        return;
+      }
+
+      currentBuyer = { email };
+      if (result.has_pin) {
+        showStep('pin');
+        focusFirstPinDigit('pin');
+      } else {
+        showStep('create');
+        focusFirstPinDigit('create');
+      }
+    } catch (error) {
+      emailError.textContent = error.message;
+      emailError.classList.add('show');
+    } finally {
+      emailContinue.disabled = false;
+      emailContinue.textContent = 'Continue →';
     }
   });
   emailInput.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('email-continue').click(); });
@@ -439,15 +432,19 @@
     document.querySelectorAll(`.pin-digit[data-step="${step}"]`).forEach(i => i.value = '');
   }
 
-  function checkPinComplete(step) {
+  async function checkPinComplete(step) {
     const value = getPinValue(step);
     if (value.length < 4) return;
 
     if (step === 'pin') {
       const error = document.getElementById('pin-error');
-      if (value === currentBuyer.pin) {
-        logIn(currentBuyer.email);
-      } else {
+      error.classList.remove('show');
+
+      try {
+        const result = await authRequest('login', currentBuyer.email, value);
+        logIn(result.buyer);
+      } catch (authError) {
+        error.textContent = authError.message;
         error.classList.add('show');
         clearPin('pin');
         focusFirstPinDigit('pin');
@@ -455,11 +452,18 @@
     }
 
     if (step === 'create') {
-      const buyers = getBuyers();
-      const buyer = buyers.find(b => b.email.toLowerCase() === currentBuyer.email.toLowerCase());
-      buyer.pin = value;
-      saveBuyers(buyers);
-      logIn(buyer.email);
+      const error = document.getElementById('create-error');
+      error.classList.remove('show');
+
+      try {
+        const result = await authRequest('create_pin', currentBuyer.email, value);
+        logIn(result.buyer);
+      } catch (authError) {
+        error.textContent = authError.message;
+        error.classList.add('show');
+        clearPin('create');
+        focusFirstPinDigit('create');
+      }
     }
   }
 
@@ -467,8 +471,9 @@
     window.location.href = 'mailto:support@brand-story.agency?subject=Portal%20PIN%20reset';
   });
 
-  function logIn(email) {
-    localStorage.setItem(SESSION_KEY, email);
+  function logIn(buyer) {
+    localStorage.setItem(BUYERS_KEY, JSON.stringify([buyer]));
+    localStorage.setItem(SESSION_KEY, buyer.email);
     window.location.href = 'portal-dashboard.html';
   }
 
