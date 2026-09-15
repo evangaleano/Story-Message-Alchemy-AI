@@ -30,7 +30,14 @@ import {
   logUsage,
 } from '../lib/supabaseClient.js';
 import { canAccessProduct, getProductInfo } from '../lib/entitlements.js';
-import { randomUUID } from 'crypto';
+
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
 
 async function callAnthropicAPI(messages, systemPrompt) {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -79,7 +86,7 @@ export default async function handler(req, res) {
     // Generate a proper UUID if project_id is invalid (fix for frontend caching issue)
     if (!isValidUUID(project_id)) {
       console.log(`Invalid project_id format received: ${project_id}, generating new UUID`);
-      project_id = randomUUID();
+      project_id = generateUUID();
     }
 
     if (![1, 2, 3].includes(product_id)) {
