@@ -89,9 +89,16 @@ export default async function handler(req, res) {
     // 2. Verify user exists or create if needed (user_id is actually email from frontend)
     let user;
     try {
+      console.log(`[API] Calling getOrCreateUser for: ${user_id}`);
       user = await getOrCreateUser(user_id);
+      console.log(`[API] getOrCreateUser returned user with id: ${user?.id}`);
     } catch (e) {
-      return res.status(401).json({ error: 'User lookup failed', details: e.message });
+      console.error(`[API] getOrCreateUser failed:`, e.message);
+      return res.status(401).json({
+        error: 'User lookup/creation failed',
+        details: e.message,
+        user_email: user_id
+      });
     }
 
     // 3. Verify entitlement (server-side)
