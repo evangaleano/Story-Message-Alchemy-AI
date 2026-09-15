@@ -97,9 +97,9 @@ export async function getProject(projectId) {
     .from('projects')
     .select('*')
     .eq('id', projectId)
-    .single();
+    .maybeSingle();
 
-  if (error) throw new Error(`Project not found: ${error.message}`);
+  if (error) throw new Error(`Project lookup failed: ${error.message}`);
   return data;
 }
 

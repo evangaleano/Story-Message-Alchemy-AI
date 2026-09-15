@@ -116,45 +116,46 @@ export default async function handler(req, res) {
     try {
       project = await getProject(project_id);
     } catch (e) {
-      // Only create if the record genuinely doesn't exist (not for other database errors)
-      if (e.message && e.message.includes('not found')) {
-        try {
-          const { error } = await supabase
-            .from('projects')
-            .insert([{
-              id: project_id,
-              user_id: user.id,
-              product_id: product_id,
-              project_name: `Project ${new Date().toLocaleDateString()}`,
-              current_stage: 1,
-              state: {},
-              conversation: [],
-              completed: false,
-            }]);
+      console.error(`[API] Project lookup error for ${project_id}:`, e.message);
+      return res.status(500).json({
+        error: 'PROJECT_LOOKUP_FAILED',
+        message: 'Could not access project database'
+      });
+    }
 
-          if (error) throw error;
-          project = {
+    if (!project) {
+      const projectName = `Project ${new Date().toLocaleDateString()}`;
+
+      try {
+        const { error } = await supabase
+          .from('projects')
+          .insert([{
             id: project_id,
             user_id: user.id,
             product_id: product_id,
-            project_name: `Project ${new Date().toLocaleDateString()}`,
+            project_name: projectName,
             current_stage: 1,
             state: {},
             conversation: [],
             completed: false,
-          };
-        } catch (createError) {
-          console.error(`[API] PROJECT_CREATE_FAILED for ${project_id}:`, createError.message);
-          return res.status(500).json({
-            error: 'PROJECT_CREATE_FAILED',
-            message: 'Could not create project'
-          });
-        }
-      } else {
-        console.error(`[API] Project lookup error for ${project_id}:`, e.message);
+          }]);
+
+        if (error) throw error;
+        project = {
+          id: project_id,
+          user_id: user.id,
+          product_id: product_id,
+          project_name: projectName,
+          current_stage: 1,
+          state: {},
+          conversation: [],
+          completed: false,
+        };
+      } catch (createError) {
+        console.error(`[API] PROJECT_CREATE_FAILED for ${project_id}:`, createError.message);
         return res.status(500).json({
-          error: 'PROJECT_LOOKUP_FAILED',
-          message: 'Could not access project database'
+          error: 'PROJECT_CREATE_FAILED',
+          message: 'Could not create project'
         });
       }
     }
@@ -190,7 +191,25 @@ export default async function handler(req, res) {
         message: 'Failed to get response from AI service'
       });
     }
-    const agent_response = message.content[0].text;
+    const contentBlocks = Array.isArray(message.content) ? message.content : [];
+    const agent_response = contentBlocks
+      .filter((block) => block?.type === 'text' && typeof block.text === 'string')
+      .map((block) => block.text)
+      .join('\n')
+      .trim();
+
+    if (!agent_response) {
+      console.error('[API] ANTHROPIC_EMPTY_TEXT_RESPONSE', {
+        stop_reason: message.stop_reason,
+        content_types: contentBlocks.map((block) => block?.type),
+        usage: message.usage,
+      });
+
+      return res.status(502).json({
+        error: 'ANTHROPIC_EMPTY_TEXT_RESPONSE',
+        message: 'The AI service returned no displayable text',
+      });
+    }
 
     // 9. Extract structured state updates from the agent response
     // (This is a placeholder — Phase 3 will implement product-specific parsers)
@@ -345,8 +364,23 @@ function parseAgentResponse(agentResponse, productId, currentState, currentStage
 function buildMessagesArray(project, newMessage) {
   const conversation = Array.isArray(project.conversation) ? project.conversation : [];
 
+  // Older responses could be saved without content when Claude returned a
+  // non-text block first. Do not send those malformed entries back to Anthropic.
+  const validConversation = conversation.filter((msg) =>
+    ['user', 'assistant'].includes(msg?.role) &&
+    typeof msg.content === 'string' &&
+    msg.content.trim()
+  );
+
+  if (validConversation.length !== conversation.length) {
+    console.warn('[API] SKIPPED_INVALID_CONVERSATION_MESSAGES', {
+      project_id: project.id,
+      skipped_count: conversation.length - validConversation.length,
+    });
+  }
+
   // Keep last 10 messages (20 turns) to maintain context but avoid bloat
-  const recentMessages = conversation.slice(-20);
+  const recentMessages = validConversation.slice(-20);
 
   // Convert stored conversation format to Claude API format
   const messages = recentMessages.map((msg) => ({
@@ -362,4 +396,3 @@ function buildMessagesArray(project, newMessage) {
 
   return messages;
 }
-
